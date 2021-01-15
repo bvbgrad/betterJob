@@ -1,8 +1,43 @@
-<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>340</x><y>50</y><w>100</w><h>100</h></coordinates><panel_attributes>Event
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>50</x><y>20</y><w>100</w><h>70</h></coordinates><panel_attributes>Company
 --
-Date: Timestamp
-Event
-Job
-POC
-
-</panel_attributes><additional_attributes></additional_attributes></element></diagram>
+Id:PK
+Name:text
+Address:FK
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>50</x><y>200</y><w>110</w><h>80</h></coordinates><panel_attributes>POC
+--
+Id:PK
+Name:text
+ContactMethod:FK
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>50</x><y>110</y><w>100</w><h>70</h></coordinates><panel_attributes>Company_POC
+--
+Id:PK
+Name:text
+ContactMethod:FK
+Address:FK
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>90</x><y>80</y><w>30</w><h>50</h></coordinates><panel_attributes>lt=-</panel_attributes><additional_attributes>10;30;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>90</x><y>170</y><w>30</w><h>50</h></coordinates><panel_attributes>lt=-</panel_attributes><additional_attributes>10;10;10;30</additional_attributes></element><element><id>UMLClass</id><coordinates><x>180</x><y>10</y><w>110</w><h>90</h></coordinates><panel_attributes>Company_Address
+--
+Id:PK
+Primary:Boolean
+Company:FK
+Address:FK</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>140</x><y>50</y><w>60</w><h>30</h></coordinates><panel_attributes>lt=-</panel_attributes><additional_attributes>10;10;40;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>50</x><y>310</y><w>110</w><h>100</h></coordinates><panel_attributes>ContactMethod
+--
+Id:PK
+ContactType:text
+ContactInfo:text
+POC:FK
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>90</x><y>270</y><w>50</w><h>60</h></coordinates><panel_attributes>lt=-
+m1=0..n</panel_attributes><additional_attributes>10;40;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>340</x><y>10</y><w>100</w><h>120</h></coordinates><panel_attributes>Address
+--
+Id:PK
+Street:text
+City:text
+StateCode:FK
+Zip:text
+TimeZone:Int
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>280</x><y>50</y><w>80</w><h>30</h></coordinates><panel_attributes>lt=-</panel_attributes><additional_attributes>60;10;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>190</x><y>210</y><w>110</w><h>90</h></coordinates><panel_attributes>POC_Address
+--
+Id:PK
+Primary:Boolean
+POC:FK
+Address:FK</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>150</x><y>240</y><w>60</w><h>30</h></coordinates><panel_attributes>lt=-</panel_attributes><additional_attributes>10;10;40;10</additional_attributes></element><element><id>Relation</id><coordinates><x>290</x><y>90</y><w>70</w><h>180</h></coordinates><panel_attributes>lt=-</panel_attributes><additional_attributes>50;10;30;10;30;160;10;160</additional_attributes></element><element><id>Text</id><coordinates><x>180</x><y>120</y><w>120</w><h>50</h></coordinates><panel_attributes>cardinality is many to many unless otherwise noted
+style=wordwrap</panel_attributes><additional_attributes></additional_attributes></element></diagram>
