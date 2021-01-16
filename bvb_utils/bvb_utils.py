@@ -72,8 +72,10 @@ def setup_logging():
     logger.addHandler(fh)
     logger.addHandler(ch)
 
-    logger.debug(f'setup_logging():{logger_name}: example debug message')
-    logger.info(f"setup_logging():{logger_name}: example info message")
-    logger.warning(f'setup_logging():{logger_name}: example warn message')
-    logger.error(f'setup_logging():{logger_name}: example error message')
-    logger.critical(f'setup_logging():{logger_name}: example critical message')
+    # logger.debug(f'setup_logging():{logger_name}: example debug message')
+    # logger.info(f"setup_logging():{logger_name}: example info message")
+    # logger.warning(f'setup_logging():{logger_name}: example warn message')
+    # logger.error(f'setup_logging():{logger_name}: example error message')
+    # logger.critical(f'setup_logging():{logger_name}: example critical message')
+
+    logger.info(f"setup_logging():{logger_name}: Logging enabled")

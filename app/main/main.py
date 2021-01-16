@@ -38,7 +38,7 @@ def menu():
                     size=(55, 1), pad=(0, 3), key='-status-')]
               ]
 
-    window = sg.Window('"Find a Better Job" Event Log', 
+    window = sg.Window('"Find a Better Job" Job Resource Manager', 
         layout, default_element_size=(40, 1), grab_anywhere=False)
 
     # --- Menu Loop --- #
