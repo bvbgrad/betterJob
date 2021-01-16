@@ -1,7 +1,8 @@
 {
     "python.linting.pylintEnabled": false,
     "python.linting.mypyEnabled": false,
-    "python.linting.pydocstyleEnabled": true,
+    "python.linting.pydocstyleEnabled": false,
     "python.linting.enabled": true,
-    "python.pythonPath": "d:\\data\\dev\\dbs\\betterjob\\venv\\Scripts\\python.exe"
+    "python.pythonPath": "d:\\data\\dev\\dbs\\betterjob\\venv\\Scripts\\python.exe",
+    "python.linting.flake8Enabled": true
 }
