@@ -5,6 +5,9 @@ import logging
 import os
 import PySimpleGUI as sg
 
+from model.Company import Company
+from model.companyDAO import add_company
+
 author = __author__ = 'Brent V. Bingham'
 version = __version__ = '0.1'
 
@@ -24,7 +27,7 @@ def menu():
         [['File',
             ['Open', 'Save', 'Properties', 'Exit']],
         ['Features',
-            ['feature1']],
+            ['Add Company']],
         ['Daily Tasks',
             ['Identify Job resources', 'Track events', 'Log face-to-face']],
         ['Help', 
@@ -47,12 +50,20 @@ def menu():
         logger.info(f"Menu event='{event}'")
         if event == sg.WIN_CLOSED or event == 'Exit' or event is None:
             break       # exit event clicked
-        elif event == '-timer-':
-            pass        # add your call to launch a timer program
+        elif event == 'Add Company':
+            new_company()
         elif event == '-cpu-':
             pass        # add your call to launch a CPU measuring utility
     window.close()
 
+
+@utils.log_wrap
+def new_company():
+    company = Company(name="Ancestory")
+    company_list = add_company(company)
+
+    # for i, company in enumerate(company_list):
+    #     print(f"{i:2d}: {company}")
 
 @utils.log_wrap
 def getargs():
