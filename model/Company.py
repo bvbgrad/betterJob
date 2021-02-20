@@ -3,15 +3,15 @@
     business object: Company 
 """
 
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Sequence, Integer, String, Column
+from sqlalchemy.orm import declarative_base
+from sqlalchemy import Text, Integer, String, Column
 
-Base = declarative_base()
+from model import Base
 
 class Company(Base):
-    __tablename__ = 'Company'
-    Id = Column(Integer, Sequence('company_id_seq'), primary_key=True)
+    __tablename__ = 'company'
+    Id = Column(Integer, primary_key=True)
     name = Column(String(30))
 
     def __repr__(self):
-        return 'Company <{}>'.format(self.name)
+        return f"<Company(Id={self.Id!r}, name={self.name!r})>"

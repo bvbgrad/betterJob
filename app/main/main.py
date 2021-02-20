@@ -60,7 +60,9 @@ def menu():
 @utils.log_wrap
 def new_company():
     company = Company(name="Ancestory")
-    company_list = add_company(company)
+    add_company(company)
+
+    # company_list = add_company(company)
 
     # for i, company in enumerate(company_list):
     #     print(f"{i:2d}: {company}")
