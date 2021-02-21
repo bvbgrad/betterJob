@@ -5,8 +5,8 @@ import logging
 import os
 import PySimpleGUI as sg
 
+from model import Session_db
 from model.Company import Company
-from model.companyDAO import add_company
 
 author = __author__ = 'Brent V. Bingham'
 version = __version__ = '0.1'
@@ -27,7 +27,7 @@ def menu():
             ['File',
                 ['Open', 'Save', 'Properties', 'Exit']],
             ['Features',
-                ['Add Company']],
+                ['Add Company', 'List companies']],
             ['Daily Tasks',
                 ['Identify Job resources',
                     'Track events',
@@ -57,6 +57,8 @@ def menu():
             break       # exit event clicked
         elif event == 'Add Company':
             new_company()
+        elif event == 'List companies':
+            get_company_list()
         elif event == '-cpu-':
             pass        # add your call to launch a CPU measuring utility
     window.close()
@@ -65,12 +67,19 @@ def menu():
 @utils.log_wrap
 def new_company():
     company = Company(name="Ancestory")
-    add_company(company)
+    session = Session_db()
+    session.add(company)
+    session.commit()
 
-    # company_list = add_company(company)
 
-    # for i, company in enumerate(company_list):
-    #     print(f"{i:2d}: {company}")
+def get_company_list():
+    session = Session_db()
+    number_companies = session.query(Company).count()
+    print(f"number = {number_companies}")
+    company1 = session.query(Company).filter_by(name='Ancestory').all()
+    session.close()
+
+    print(f"Company = {company1}")
 
 
 @utils.log_wrap

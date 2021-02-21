@@ -11,12 +11,13 @@
 """
 
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative_base import declarative_base
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 db_uri = 'sqlite:///jrm.db'
 
 # echo=True displays SQL statements
-# future=True invokes SQLAlchemy v2.0 features
-db_engine = create_engine(db_uri, echo=True, future=True)
+db_engine = create_engine(db_uri, echo=False)
+Session_db = sessionmaker(bind=db_engine)
 
 Base = declarative_base()
