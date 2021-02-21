@@ -1,12 +1,12 @@
 """
     Database model and methods
-    business object: Company 
+    business object: Company
 """
 
-from sqlalchemy.orm import declarative_base
-from sqlalchemy import Text, Integer, String, Column
+from sqlalchemy import Column, Integer, String
 
 from model import Base
+
 
 class Company(Base):
     __tablename__ = 'company'

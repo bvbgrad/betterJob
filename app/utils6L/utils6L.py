@@ -1,7 +1,9 @@
 """
-Copyright 6L LLC (2021) - See MIT LICENSE 
+Copyright 6L LLC (2021) - See MIT LICENSE
 
-Cross project features or decorators, similar to Spring Aspect-Oriented Programming(AOP)
+Cross project features or decorators, similar to Spring Aspect-Oriented
+Programming(AOP)
+
 https://docs.spring.io/spring-framework/docs/4.3.12.RELEASE/spring-framework-reference/html/aop.html
 
 usage - copy/paste package directory into the project file structure and
@@ -11,9 +13,9 @@ Logger name is defined as an environment variable.
 __init__.py module of the main package needs to ingest the .env file
 
 from dotenv import load_dotenv
-load_dotenv() 
+load_dotenv()
 
-ensure the following import statement is added to the rest of the project modules.
+ensure the following import statement is added to the rest of the modules.
 
 import bvb_utils.bvb_utils as utils
 import logging
@@ -58,7 +60,8 @@ def setup_logging():
     logger.setLevel(logger_level_base)
 
     # create file handler which logs even debug messages
-    fh = RotatingFileHandler(f"logs/{logger_name}.log", maxBytes=1000000, backupCount=10)
+    fh = RotatingFileHandler(
+        f"logs/{logger_name}.log", maxBytes=1000000, backupCount=10)
     fh.setLevel(logger_level_file)
     # create console handler with a higher log level
     ch = logging.StreamHandler()
@@ -76,6 +79,7 @@ def setup_logging():
     # logger.info(f"setup_logging():{logger_name}: example info message")
     # logger.warning(f'setup_logging():{logger_name}: example warn message')
     # logger.error(f'setup_logging():{logger_name}: example error message')
-    # logger.critical(f'setup_logging():{logger_name}: example critical message')
+    # logger.critical(
+    #   f'setup_logging():{logger_name}: example critical message')
 
     logger.info(f"setup_logging():{logger_name}: Logging enabled")

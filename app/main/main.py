@@ -18,30 +18,35 @@ logger = logging.getLogger(logger_name)
 @utils.log_wrap
 def menu():
     args = getargs()
-    sg.ChangeLookAndFeel('LightGreen')      
+    sg.ChangeLookAndFeel('LightGreen')
     sg.SetOptions(element_padding=(0, 0))
 
     # ------ GUI Defintion ------ #
 
-    menu_def = \
-        [['File',
-            ['Open', 'Save', 'Properties', 'Exit']],
-        ['Features',
-            ['Add Company']],
-        ['Daily Tasks',
-            ['Identify Job resources', 'Track events', 'Log face-to-face']],
-        ['Help', 
-            ['Instructions', 'About...']],
-        ] 
+    menu_def = [
+            ['File',
+                ['Open', 'Save', 'Properties', 'Exit']],
+            ['Features',
+                ['Add Company']],
+            ['Daily Tasks',
+                ['Identify Job resources',
+                    'Track events',
+                    'Log face-to-face']],
+            ['Help',
+                ['Instructions', 'About...']],
+            ]
 
+    layout = [
+                [sg.Menu(menu_def, )],
+                [sg.Text('', size=(20, 8))],
+                [sg.Text(
+                    f"Options: {args}", relief=sg.RELIEF_SUNKEN,
+                    size=(55, 1), pad=(0, 3), key='-status-')
+                 ]
+            ]
 
-    layout = [[sg.Menu(menu_def, )],
-              [sg.Text('', size=(20, 8))],
-              [sg.Text(f"Options: {args}", relief=sg.RELIEF_SUNKEN,
-                    size=(55, 1), pad=(0, 3), key='-status-')]
-              ]
-
-    window = sg.Window('"Find a Better Job" Job Resource Manager', 
+    window = sg.Window(
+        '"Find a Better Job" Job Resource Manager',
         layout, default_element_size=(40, 1), grab_anywhere=False)
 
     # --- Menu Loop --- #
@@ -67,12 +72,15 @@ def new_company():
     # for i, company in enumerate(company_list):
     #     print(f"{i:2d}: {company}")
 
+
 @utils.log_wrap
 def getargs():
     parser = argparse.ArgumentParser(
         description="Track and log job search activities")
-    parser.add_argument('-v', '--verbose', default=False, action="store_true",
+    parser.add_argument(
+        '-v', '--verbose', default=False, action="store_true",
         help='Provide detailed information')
-    parser.add_argument('--version', action='version', version='%(prog)s {version}')
+    parser.add_argument(
+        '--version', action='version', version='%(prog)s {version}')
     args = parser.parse_args()
     return args

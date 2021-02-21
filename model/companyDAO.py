@@ -1,6 +1,9 @@
 """
 """
 
+from sqlalchemy.orm import Session
+from model import db_engine, Company
+
 import app.utils6L.utils6L as utils
 import logging
 import os
@@ -8,14 +11,11 @@ import os
 logger_name = os.getenv("LOGGER_NAME")
 logger = logging.getLogger(logger_name)
 
-from sqlalchemy import text, select
-from sqlalchemy.orm import Session
-from model import db_engine, Company
 
 @utils.log_wrap
 def add_company(company):
     logger.info(__name__ + f".add_company(): {company}")
-    #TODO prevent adding duplicate companies
+    # TODO prevent adding duplicate companies
 
     company_list = get_company_list(company)
     print(f"company list: {company_list}")
@@ -25,20 +25,22 @@ def add_company(company):
         print(f"pending: {db.new}")
         db.commit()
 
-    # return either an existing company list or the newly created database entry
+    # return either an existing company list or
+    # the newly created database entry
     # return company_list
 
 
 @utils.log_wrap
 def get_company_list(company):
-    logger.info(__name__ + f".get_company_list()")
+    logger.info(__name__ + ".get_company_list()")
 
     # stmt = select(Company).where(Company.name == 'Ancestory')
     # stmt = select(Company)
     # print(stmt)
     with Session(db_engine) as db:
         # company_list = db.execute(stmt)
-        company_list = db.execute(select(Company.name).filter_by(name='Ancestory')).scalar_one()
+        company_list = db.execute(
+            query(Company.name).filter_by(name='Ancestory')).scalar_one()
         for row in company_list:
             print(row)
 
