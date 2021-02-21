@@ -5,7 +5,6 @@ import logging
 import os
 import PySimpleGUI as sg
 
-from app.model import Session_db
 from app.model.Company import Company
 
 author = __author__ = 'Brent V. Bingham'
@@ -67,19 +66,21 @@ def menu():
 @utils.log_wrap
 def new_company():
     company = Company(name="Ancestory")
-    session = Session_db()
-    session.add(company)
-    session.commit()
+    company.add_company(company)
 
 
+@utils.log_wrap
 def get_company_list():
-    session = Session_db()
-    number_companies = session.query(Company).count()
-    print(f"number = {number_companies}")
-    company1 = session.query(Company).filter_by(name='Ancestory').all()
-    session.close()
+    company = Company(name='Ancestory')
 
-    print(f"Company = {company1}")
+    company_count = company.get_company_count()
+    print(f"total number of companies = {company_count}")
+
+    company_list = company.get_company_by_name(company.name)
+    print(
+        f"Company List for {company.name} = {company_list}")
+
+    print(f"Company List = {company.get_all_companies()}")
 
 
 @utils.log_wrap
