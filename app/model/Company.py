@@ -5,7 +5,7 @@
 
 from sqlalchemy import Column, Integer, String
 
-from model import Base
+from app.model import Base
 
 
 class Company(Base):

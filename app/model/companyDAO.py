@@ -2,7 +2,7 @@
 """
 
 from sqlalchemy.orm import Session
-from model import db_engine, Company
+from app.model import db_engine, Company
 
 import app.utils6L.utils6L as utils
 import logging

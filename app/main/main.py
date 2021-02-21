@@ -5,8 +5,8 @@ import logging
 import os
 import PySimpleGUI as sg
 
-from model import Session_db
-from model.Company import Company
+from app.model import Session_db
+from app.model.Company import Company
 
 author = __author__ = 'Brent V. Bingham'
 version = __version__ = '0.1'
