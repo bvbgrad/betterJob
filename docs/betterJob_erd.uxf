@@ -1,51 +1,54 @@
-<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>50</x><y>166</y><w>100</w><h>70</h></coordinates><panel_attributes>Company
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>70</x><y>286</y><w>110</w><h>70</h></coordinates><panel_attributes>Company
 --
 Id:PK
-Name:text
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>50</x><y>426</y><w>110</w><h>90</h></coordinates><panel_attributes>POC
+name:text
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>220</x><y>546</y><w>110</w><h>140</h></coordinates><panel_attributes>POC
 --
-Id:PK
-Name:text
-TimeZone:Int
-ContactMethod:FK
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>50</x><y>296</y><w>100</w><h>90</h></coordinates><panel_attributes>Company_POC
+POC_Id:PK
+last_name:text
+given_name:text
+preferred_name:text
+salutation:text
+time_zone:Int
+contact_method_Id:FK
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>70</x><y>586</y><w>100</w><h>90</h></coordinates><panel_attributes>Company_POC
 --
-Id:PK
-Name:text
-Address:FK
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>90</x><y>226</y><w>30</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;70;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>90</x><y>376</y><w>30</w><h>70</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;50</additional_attributes></element><element><id>UMLClass</id><coordinates><x>50</x><y>26</y><w>110</w><h>90</h></coordinates><panel_attributes>Company_Address
+company_Id:FK
+POC_Id:FK
 --
-Id:PK
-Primary:Boolean
-Company:FK
-Address:FK</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>90</x><y>106</y><w>30</w><h>80</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;60</additional_attributes></element><element><id>UMLClass</id><coordinates><x>50</x><y>536</y><w>110</w><h>90</h></coordinates><panel_attributes>ContactMethod
+POC_role:text
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>110</x><y>346</y><w>30</w><h>260</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;240;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>160</x><y>626</y><w>80</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;60;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>60</x><y>86</y><w>130</w><h>110</h></coordinates><panel_attributes>Company_Address
 --
-Id:PK
-ContactType:text
-ContactInfo:text
+company_Id:FK
+address_Id:FK
+--
+company_HQ:Boolean</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>110</x><y>186</y><w>30</w><h>120</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;100</additional_attributes></element><element><id>UMLClass</id><coordinates><x>220</x><y>716</y><w>110</w><h>90</h></coordinates><panel_attributes>Contact_method
+--
+contact_method_Id:PK
+contact_method:text
 POC:FK
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>90</x><y>506</y><w>50</w><h>50</h></coordinates><panel_attributes>lt=-
-m1=0..n</panel_attributes><additional_attributes>10;30;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>210</x><y>26</y><w>120</w><h>100</h></coordinates><panel_attributes>Address
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>260</x><y>676</y><w>50</w><h>60</h></coordinates><panel_attributes>lt=-
+m1=0..n</panel_attributes><additional_attributes>10;40;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>230</x><y>86</y><w>120</w><h>100</h></coordinates><panel_attributes>Address
 --
-Id:PK
-Street:text
-City:text
-StateCode:FK
-Zip:text
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>150</x><y>66</y><w>80</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;60;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>360</x><y>166</y><w>140</w><h>90</h></coordinates><panel_attributes>Job
+address_Id:PK
+street_address:text
+city:text
+state_code:FK
+zip:text
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>180</x><y>146</y><w>70</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;50;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>590</x><y>286</y><w>170</w><h>90</h></coordinates><panel_attributes>Job
 --
 Id:PK
 Name:text
 Job_Id:text
-JobLogDate:datetime
+Job_posting_date:datetime
 
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>140</x><y>196</y><w>90</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>70;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>310</x><y>196</y><w>70</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;50;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>210</x><y>156</y><w>110</w><h>100</h></coordinates><panel_attributes>Company_Job
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>170</x><y>316</y><w>290</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>270;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>540</x><y>316</y><w>70</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;50;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>440</x><y>276</y><w>110</w><h>100</h></coordinates><panel_attributes>Company_Job
 --
 Id:PK
 JobExpireDate:datetime
 JobSalaryMax:integer
 CompanyFK
-JobFK</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>350</x><y>436</y><w>140</w><h>120</h></coordinates><panel_attributes>Action
+JobFK</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>580</x><y>566</y><w>140</w><h>120</h></coordinates><panel_attributes>Action
 --
 Id:PK
 Name:text
@@ -54,32 +57,32 @@ JobLogDate:datetime
 ActionCodeFK
 MetricFK
 
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>350</x><y>296</y><w>140</w><h>90</h></coordinates><panel_attributes>Job_Action
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>580</x><y>426</y><w>140</w><h>90</h></coordinates><panel_attributes>Job_Action
 --
 Id:PK
 Name:text
 Job_Id:text
 JobLogDate:datetime
 
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>150</x><y>466</y><w>70</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>50;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>420</x><y>246</y><w>30</w><h>70</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;50;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>300</x><y>586</y><w>110</w><h>60</h></coordinates><panel_attributes>ActionCode
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>320</x><y>626</y><w>140</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>120;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>650</x><y>366</y><w>30</w><h>80</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;60;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>530</x><y>716</y><w>110</w><h>60</h></coordinates><panel_attributes>ActionCode
 --
 Id:PK
-Name:text</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>420</x><y>586</y><w>110</w><h>60</h></coordinates><panel_attributes>MetricCode
+Name:text</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>650</x><y>716</y><w>110</w><h>60</h></coordinates><panel_attributes>MetricCode
 --
 Id:PK
-Name:text</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>380</x><y>76</y><w>110</w><h>60</h></coordinates><panel_attributes>StateCode
+Name:text</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>230</x><y>216</y><w>120</w><h>60</h></coordinates><panel_attributes>StateCode
 --
 Id:PK
-Name:text</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>320</x><y>96</y><w>80</w><h>40</h></coordinates><panel_attributes>lt=-
-m1=0..1</panel_attributes><additional_attributes>60;10;10;10</additional_attributes></element><element><id>UMLNote</id><coordinates><x>190</x><y>336</y><w>120</w><h>50</h></coordinates><panel_attributes>cardinality is many to many unless otherwise noted
+state:text</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>270</x><y>176</y><w>50</w><h>60</h></coordinates><panel_attributes>lt=-
+m1=0..1</panel_attributes><additional_attributes>10;40;10;10</additional_attributes></element><element><id>UMLNote</id><coordinates><x>400</x><y>66</y><w>130</w><h>50</h></coordinates><panel_attributes>cardinality is many to many unless otherwise noted
 bg=#3c7a00
-style=wordwrap</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>200</x><y>436</y><w>110</w><h>70</h></coordinates><panel_attributes>POC_Action
+style=wordwrap</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>440</x><y>596</y><w>110</w><h>70</h></coordinates><panel_attributes>POC_Action
 --
 Id:PK
 POC:FK
-Action:FK</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>300</x><y>466</y><w>70</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;50;10</additional_attributes></element><element><id>Relation</id><coordinates><x>420</x><y>376</y><w>30</w><h>80</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;60</additional_attributes></element><element><id>Relation</id><coordinates><x>360</x><y>546</y><w>50</w><h>60</h></coordinates><panel_attributes>lt=-
-m1=0..1</panel_attributes><additional_attributes>10;40;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>440</x><y>546</y><w>50</w><h>60</h></coordinates><panel_attributes>lt=-
-m1=0..1</panel_attributes><additional_attributes>10;40;10;10</additional_attributes></element><element><id>UMLNote</id><coordinates><x>380</x><y>6</y><w>130</w><h>40</h></coordinates><panel_attributes>betterJob_erd v0.01
+Action:FK</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>540</x><y>626</y><w>60</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;40;10</additional_attributes></element><element><id>Relation</id><coordinates><x>650</x><y>506</y><w>30</w><h>80</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;60</additional_attributes></element><element><id>Relation</id><coordinates><x>590</x><y>676</y><w>50</w><h>60</h></coordinates><panel_attributes>lt=-
+m1=0..1</panel_attributes><additional_attributes>10;40;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>670</x><y>676</y><w>50</w><h>60</h></coordinates><panel_attributes>lt=-
+m1=0..1</panel_attributes><additional_attributes>10;40;10;10</additional_attributes></element><element><id>UMLNote</id><coordinates><x>400</x><y>16</y><w>130</w><h>40</h></coordinates><panel_attributes>betterJob_erd v0.01
 2021 January 16
 bg=#3c7a00
-style=wordwrap</panel_attributes><additional_attributes></additional_attributes></element></diagram>
+style=wordwrap</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>30</x><y>0</y><w>350</w><h>410</h></coordinates><panel_attributes>Company entities</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>30</x><y>440</y><w>350</w><h>400</h></coordinates><panel_attributes>POC entities</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>400</x><y>240</y><w>460</w><h>570</h></coordinates><panel_attributes>Job action entities</panel_attributes><additional_attributes></additional_attributes></element></diagram>

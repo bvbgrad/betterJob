@@ -25,6 +25,13 @@ class Company(Base):
         else:
             db.add(company)
         db.commit()
+        db.close()
+
+    def delete_company(self, company):
+        db = Session_db()
+        db.delete(company)
+        db.commit()
+        db.close()
 
     def get_company_count(self):
         db = Session_db()
@@ -43,3 +50,18 @@ class Company(Base):
         company_list = db.query(Company).all()
         db.close()
         return company_list
+
+
+class Address(Base):
+    __tablename__ = 'address'
+    address_Id = Column(Integer, primary_key=True)
+    street_address = Column(String(50))
+    city = Column(String(20))
+    state = Column(String(2))
+    zip = Column(String(5))
+
+    def __repr__(self):
+        return f"< Address(Id={self.address_Id!r}, \
+                street={self.street_address!r}, \
+                city={self.city!r}, state={self.state!r}, \
+                zip={self.zip!r}) >"

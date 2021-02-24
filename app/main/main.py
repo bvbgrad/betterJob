@@ -26,7 +26,9 @@ def menu():
             ['File',
                 ['Open', 'Save', 'Properties', 'Exit']],
             ['Features',
-                ['Add Company', 'List companies']],
+                ['Add Company',
+                    'Delete Company',
+                    'List companies']],
             ['Daily Tasks',
                 ['Identify Job resources',
                     'Track events',
@@ -56,6 +58,8 @@ def menu():
             break       # exit event clicked
         elif event == 'Add Company':
             new_company()
+        elif event == 'Delete Company':
+            delete_company()
         elif event == 'List companies':
             get_company_list()
         elif event == '-cpu-':
@@ -65,22 +69,50 @@ def menu():
 
 @utils.log_wrap
 def new_company():
-    company = Company(name="Ancestory")
-    company.add_company(company)
+    text = sg.popup_get_text('Get company name', 'Company name')
+    if text is not None:
+        if len(text) > 2:
+            company = Company(name=text)
+            try:
+                company.add_company(company)
+            except ValueError as e:
+                sg.popup_no_titlebar(e)
+        else:
+            sg.popup("Company names must have at least 3 characters")
+
+
+@utils.log_wrap
+def delete_company():
+    # get_company_list will ask for the company list filter
+    company_list = get_company_list()
+    # create blank company to use company instance methods
+    company = Company()
+    company_count = company.get_company_count()
+    # confirm delete action
+    number_to_delete = len(company_list)
+    msg = f"Delete {number_to_delete} of {company_count} companies?"
+    response = sg.popup_yes_no("Warning - Irreversible delete action", msg)
+    if response == "Yes":
+        response = sg.popup_ok_cancel(
+            f"Delete these {number_to_delete} companies?\n{company_list}",
+            title=f"Deleting {number_to_delete} companies",)
+        if response == "OK":
+            for company in company_list:
+                company.delete_company(company)
+            sg.popup_no_titlebar(f"Deleted {number_to_delete} companies")
 
 
 @utils.log_wrap
 def get_company_list():
-    company = Company(name='Ancestory')
-
-    company_count = company.get_company_count()
-    print(f"total number of companies = {company_count}")
-
-    company_list = company.get_company_by_name(company.name)
-    print(
-        f"Company List for {company.name} = {company_list}")
-
-    print(f"Company List = {company.get_all_companies()}")
+    text = sg.popup_get_text(
+        'Company name (Default: all companies)', 'Get company name')
+    company = Company(name=text)
+    if text == "" or text is None:
+        company_list = company.get_all_companies()
+    else:
+        company_list = company.get_company_by_name(company.name)
+    print(f"Company List for {text} = {company_list}")
+    return company_list
 
 
 @utils.log_wrap
