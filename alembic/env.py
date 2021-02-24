@@ -1,13 +1,11 @@
-from __future__ import with_statement
-
-import logging
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-import os
+
+from app.model import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -16,22 +14,12 @@ config = context.config
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
-logger = logging.getLogger('alembic.env')
 
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from alembic_migrate.cli import get_base, import_models
-
-target_base, url = get_base()
-import_models()
-
-config.set_main_option(
-    'sqlalchemy.url',
-    url)
-target_metadata = target_base.metadata
-#target_metadata = current_app.extensions['migrate'].db.metadata
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -53,7 +41,10 @@ def run_migrations_offline():
     """
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
-        url=url, target_metadata=target_metadata, literal_binds=True
+        url=url,
+        target_metadata=target_metadata,
+        literal_binds=True,
+        dialect_opts={"paramstyle": "named"},
     )
 
     with context.begin_transaction():
@@ -67,28 +58,15 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-
-    # this callback is used to prevent an auto-migration from being generated
-    # when there are no changes to the schema
-    # reference: http://alembic.zzzcomputing.com/en/latest/cookbook.html
-    def process_revision_directives(context, revision, directives):
-        if getattr(config.cmd_opts, 'autogenerate', False):
-            script = directives[0]
-            if script.upgrade_ops.is_empty():
-                directives[:] = []
-                logger.info('No changes in schema detected.')
-
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
-        prefix='sqlalchemy.',
+        prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection,
-            target_metadata=target_metadata,
-            process_revision_directives=process_revision_directives
+            connection=connection, target_metadata=target_metadata
         )
 
         with context.begin_transaction():
