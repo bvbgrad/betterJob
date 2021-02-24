@@ -10,6 +10,7 @@
     serve as a factory for new Session objects."
 """
 
+from contextlib import contextmanager
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -21,3 +22,17 @@ db_engine = create_engine(db_uri, echo=False)
 Session_db = sessionmaker(bind=db_engine)
 
 Base = declarative_base()
+
+
+@contextmanager
+def db_session():
+    """Provide a transactional scope around a series of operations."""
+    session = Session_db()
+    try:
+        yield session
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+    finally:
+        session.close()
