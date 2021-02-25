@@ -14,7 +14,7 @@ class Company(Base):
     name = Column(String(30))
 
     def __repr__(self):
-        return f"<Company(Id={self.company_Id!r}, name={self.name!r})>"
+        return f"Company(Id={self.company_Id!r}, name={self.name!r})"
 
     def add_company(self, db, company):
         result = db.query(Company).filter_by(name=company.name).count()
@@ -50,7 +50,20 @@ class Address(Base):
     zip_code = Column(String(5))
 
     def __repr__(self):
-        return f"< Address(Id={self.address_Id!r}, \
-                street={self.street!r}, \
-                city={self.city!r}, state={self.state!r}, \
-                zip={self.zip!r}) >"
+        return f"Address(Id={self.address_Id!r}, street={self.street!r}, " +\
+            f"city={self.city!r}, state={self.state!r}, " +\
+            f"zip code={self.zip_code!r})"
+
+    def add_address(self, db, address):
+        db.add(address)
+
+    def get_address_count(self, db):
+        number_addresses = db.query(Address).count()
+        return number_addresses
+
+    def get_address_list(self, db):
+        address_list = db.query(Address).all()
+        return address_list
+
+    def delete_address(self, db, address):
+        db.delete(address)

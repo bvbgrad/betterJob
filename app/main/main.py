@@ -6,7 +6,7 @@ import os
 import PySimpleGUI as sg
 
 from app.model import db_session
-from app.model.Company import Company
+from app.model.Company import Address, Company
 
 author = __author__ = 'Brent V. Bingham'
 version = __version__ = '0.1'
@@ -17,6 +17,7 @@ logger = logging.getLogger(logger_name)
 
 @utils.log_wrap
 def menu():
+    logger.info(__name__ + ".menu()")
     args = getargs()
     sg.ChangeLookAndFeel('LightGreen')
     sg.SetOptions(element_padding=(0, 0))
@@ -27,9 +28,16 @@ def menu():
             ['File',
                 ['Open', 'Save', 'Properties', 'Exit']],
             ['Features',
-                ['Add Company',
-                    'Delete Company',
-                    'List companies']],
+                [
+                    'Company CRUD',
+                    ['Add Company',
+                        'List companies',
+                        'Delete Company'],
+                    'Address CRUD',
+                    ['Add Address',
+                        'Get addresses',
+                        'Delete Address'],
+                ]],
             ['Daily Tasks',
                 ['Identify Job resources',
                     'Track events',
@@ -58,18 +66,50 @@ def menu():
         if event == sg.WIN_CLOSED or event == 'Exit' or event is None:
             break       # exit event clicked
         elif event == 'Add Company':
-            new_company()
-        elif event == 'Delete Company':
-            delete_company()
+            add_new_company()
         elif event == 'List companies':
             get_company_list()
-        elif event == '-cpu-':
-            pass        # add your call to launch a CPU measuring utility
+        elif event == 'Delete Company':
+            delete_company()
+        elif event == 'Add Address':
+            add_new_address()
+        elif event == 'Get addresses':
+            get_address_list()
+        elif event == 'Delete Address':
+            delete_address()
     window.close()
 
 
 @utils.log_wrap
-def new_company():
+def add_new_address():
+    logger.info(__name__ + ".add_new_address()")
+    text = sg.popup_get_text('Get address', 'Street address')
+    if text is not None:
+        if len(text) > 2:
+            address = Address(street=text)
+            with db_session() as db:
+                address.add_address(db, address)
+        else:
+            sg.popup("Addressess must have at least 3 characters")
+
+
+def get_address_list():
+    logger.info(__name__ + ".get_address_list()")
+    address = Address()
+    with db_session() as db:
+        address_list = address.get_address_list(db)
+        address_count = address.get_address_count(db)
+        print(f"Found {address_count} addresses in the database")
+        print(f"The address list has {len(address_list)} addresses")
+        print(f"\t{address_list}")
+
+
+def delete_address():
+    logger.info(__name__ + ".delete_address()")
+
+
+@utils.log_wrap
+def add_new_company():
     logger.info(__name__ + ".new_company()")
     text = sg.popup_get_text('Get company name', 'Company name')
     if text is not None:
@@ -123,9 +163,10 @@ def get_company_list():
     with db_session() as db:
         if text == "" or text is None:
             company_list = company.get_all_companies(db)
+            print(f"Found a total of {len(company_list)} companies")
         else:
             company_list = company.get_company_by_name(db, company.name)
-        print(f"There are {len(company_list)} database entries for '{text}'")
+        print(f"Found {len(company_list)} database entities for '{text}'")
         print(company_list)
     return company_list
 
