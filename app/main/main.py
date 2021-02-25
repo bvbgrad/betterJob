@@ -30,7 +30,7 @@ def menu():
             ['Features',
                 [
                     'Company CRUD',
-                    ['Add Company',
+                    ['Add New Company',
                         'List companies',
                         'Delete Company'],
                     'Address CRUD',
@@ -46,9 +46,22 @@ def menu():
                 ['Instructions', 'About...']],
             ]
 
+    company_layout = [
+        [sg.Listbox(
+            values=['companies'], enable_events=True,
+            key='-LB-Company-', size=(30, 10))],
+        [sg.Listbox(
+            values=['address(es)'], enable_events=True,
+            key='-LB-Address-', size=(30, 3))],
+        [sg.Button('Add New Company')],
+        [sg.Button('Refresh Company Info')]
+        ]
+
+    col1_layout = [[sg.Frame('Company Information', layout=company_layout)]]
+
     layout = [
                 [sg.Menu(menu_def, )],
-                [sg.Text('', size=(20, 8))],
+                [sg.Column(col1_layout)],
                 [sg.Text(
                     f"Options: {args}", relief=sg.RELIEF_SUNKEN,
                     size=(55, 1), pad=(0, 3), key='-status-')
@@ -65,8 +78,15 @@ def menu():
         logger.info(f"Menu event='{event}'")
         if event == sg.WIN_CLOSED or event == 'Exit' or event is None:
             break       # exit event clicked
-        elif event == 'Add Company':
+        elif event == '-LB-Company-':
+            company_name = value['-LB-Company-']
+            msg = f"Display company details for {company_name}"
+            sg.popup(msg)
+        elif event == 'Refresh Company Info':
+            refresh_company_info(window)
+        elif event == 'Add New Company':
             add_new_company()
+            refresh_company_info(window)
         elif event == 'List companies':
             get_company_list()
         elif event == 'Delete Company':
@@ -111,9 +131,9 @@ def delete_address():
 @utils.log_wrap
 def add_new_company():
     logger.info(__name__ + ".new_company()")
-    text = sg.popup_get_text('Get company name', 'Company name')
+    text = sg.popup_get_text('Enter company name', 'Company name')
     if text is not None:
-        if len(text) > 2:
+        if len(text) > 1:
             company = Company(name=text)
             with db_session() as db:
                 try:
@@ -121,7 +141,7 @@ def add_new_company():
                 except ValueError as e:
                     sg.popup_no_titlebar(e)
         else:
-            sg.popup("Company names must have at least 3 characters")
+            sg.popup("Company names must have at least 2 characters")
 
 
 @utils.log_wrap
@@ -169,6 +189,18 @@ def get_company_list():
         print(f"Found {len(company_list)} database entities for '{text}'")
         print(company_list)
     return company_list
+
+
+@utils.log_wrap
+def refresh_company_info(window):
+    logger.info(__name__ + ".refresh_company_info()")
+    company = Company()
+    with db_session() as db:
+        company_list = company.get_all_companies(db)
+        company_names = []
+        for company in company_list:
+            company_names.append(company.name)
+        window['-LB-Company-'].update(sorted(company_names))
 
 
 @utils.log_wrap
