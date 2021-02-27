@@ -3,7 +3,8 @@
     business object: Company
 """
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
 
 from app.model import Base
 
@@ -12,6 +13,7 @@ class Company(Base):
     __tablename__ = 'company'
     company_Id = Column(Integer, primary_key=True)
     name = Column(String(30))
+    address = relationship("Address")
 
     def __repr__(self):
         return f"Company(Id={self.company_Id!r}, name={self.name!r})"
@@ -45,9 +47,10 @@ class Address(Base):
     __tablename__ = 'address'
     address_Id = Column(Integer, primary_key=True)
     street = Column(String(50))
-    city = Column(String(20))
+    city = Column(String(30))
     state = Column(String(2))
     zip_code = Column(String(5))
+    company_IdFK = Column(Integer, ForeignKey('company.company_Id'))
 
     def __repr__(self):
         return f"Address(Id={self.address_Id!r}, street={self.street!r}, " +\

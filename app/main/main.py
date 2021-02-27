@@ -47,14 +47,16 @@ def menu():
             ]
 
     company_layout = [
+        [sg.Button('Refresh Company Information')],
         [sg.Listbox(
             values=['companies'], enable_events=True,
-            key='-LB-Company-', size=(30, 10))],
+            key='-LB_Company-', size=(30, 10))],
+        [sg.Button('Add New Company')],
+        [sg.Button('Edit Company')],
         [sg.Listbox(
             values=['address(es)'], enable_events=True,
-            key='-LB-Address-', size=(30, 3))],
-        [sg.Button('Add New Company')],
-        [sg.Button('Refresh Company Info')]
+            key='-LB_Address-', size=(30, 2))],
+        [sg.Button('Add a new Address to a Company')]
         ]
 
     col1_layout = [[sg.Frame('Company Information', layout=company_layout)]]
@@ -78,11 +80,11 @@ def menu():
         logger.info(f"Menu event='{event}'")
         if event == sg.WIN_CLOSED or event == 'Exit' or event is None:
             break       # exit event clicked
-        elif event == '-LB-Company-':
-            company_name = value['-LB-Company-']
+        elif event == '-LB_Company-':
+            company_name = value['-LB_Company-']
             msg = f"Display company details for {company_name}"
             sg.popup(msg)
-        elif event == 'Refresh Company Info':
+        elif event == 'Refresh Company Information':
             refresh_company_info(window)
         elif event == 'Add New Company':
             add_new_company()
@@ -200,7 +202,7 @@ def refresh_company_info(window):
         company_names = []
         for company in company_list:
             company_names.append(company.name)
-        window['-LB-Company-'].update(sorted(company_names))
+        window['-LB_Company-'].update(sorted(company_names))
 
 
 @utils.log_wrap
