@@ -8,6 +8,8 @@ import PySimpleGUI as sg
 from app.model import db_session
 from app.model.Company import Address, Company
 
+from app.main.views import view_create_link_address, view_edit_company
+
 author = __author__ = 'Brent V. Bingham'
 version = __version__ = '0.1'
 
@@ -34,9 +36,9 @@ def menu():
                         'List companies',
                         'Delete Company'],
                     'Address CRUD',
-                    ['Add Address',
+                    ['Link Address',
                         'Get addresses',
-                        'Delete Address'],
+                        'Unlink Address'],
                 ]],
             ['Daily Tasks',
                 ['Identify Job resources',
@@ -47,16 +49,16 @@ def menu():
             ]
 
     company_layout = [
-        [sg.Button('Refresh Company Information')],
         [sg.Listbox(
-            values=['companies'], enable_events=True,
+            values=['Click here to display company info'], enable_events=True,
             key='-LB_Company-', size=(30, 10))],
         [sg.Button('Add New Company')],
         [sg.Button('Edit Company')],
         [sg.Listbox(
-            values=['address(es)'], enable_events=True,
+            values=['No linked company address'], enable_events=True,
             key='-LB_Address-', size=(30, 2))],
-        [sg.Button('Add a new Address to a Company')]
+        [sg.Button('Link a new Address to a Company')],
+        [sg.Button('Unlink selected Address')]
         ]
 
     col1_layout = [[sg.Frame('Company Information', layout=company_layout)]]
@@ -75,30 +77,38 @@ def menu():
         layout, default_element_size=(40, 1), grab_anywhere=False)
 
     # --- Menu Loop --- #
+    first_loop = True
     while True:
-        event, value = window.read()
+        event, values = window.read()
         logger.info(f"Menu event='{event}'")
         if event == sg.WIN_CLOSED or event == 'Exit' or event is None:
             break       # exit event clicked
+        elif first_loop:
+            refresh_company_info(window)
+            first_loop = False
         elif event == '-LB_Company-':
-            company_name = value['-LB_Company-']
-            msg = f"Display company details for {company_name}"
+            company_name = values['-LB_Company-'][0]
+            msg = f"Display job postings for '{company_name}'"
             sg.popup(msg)
-        elif event == 'Refresh Company Information':
+        elif event == 'Display Company list':
             refresh_company_info(window)
         elif event == 'Add New Company':
             add_new_company()
+            refresh_company_info(window)
+        elif event == 'Edit Company':
+            edit_company(values['-LB_Company-'])
             refresh_company_info(window)
         elif event == 'List companies':
             get_company_list()
         elif event == 'Delete Company':
             delete_company()
-        elif event == 'Add Address':
-            add_new_address()
+        elif event == 'Link a new Address to a Company':
+            link_address_to_company(values['-LB_Company-'])
+            refresh_company_info(window)
         elif event == 'Get addresses':
             get_address_list()
-        elif event == 'Delete Address':
-            delete_address()
+        elif event == 'Unlink selected Address':
+            unlink_address(window)
     window.close()
 
 
@@ -144,6 +154,29 @@ def add_new_company():
                     sg.popup_no_titlebar(e)
         else:
             sg.popup("Company names must have at least 2 characters")
+
+
+@utils.log_wrap
+def edit_company(company_info):
+    logger.info(__name__ + ".edit_company()")
+    # a blank company_info list means there is no company name to edit
+    if len(company_info) == 0:
+        sg.popup("Please select a company to edit")
+    else:
+        company_name = company_info[0]
+        new_company_name = view_edit_company(company_name)
+        # a blank return value means no no name change
+        if len(new_company_name) > 0:
+            # company instance required to access Company methods
+            company01 = Company()
+            with db_session() as db:
+                # replace company01 instance with prior company values
+                company01 = company01.get_company_by_name(db, company_name)
+                if company01:
+                    company01.name = new_company_name
+                    db.add(company01)
+                else:
+                    sg.popup("")
 
 
 @utils.log_wrap
@@ -194,15 +227,49 @@ def get_company_list():
 
 
 @utils.log_wrap
+def link_address_to_company(company_info):
+    logger.info(__name__ + ".link_address_to_company()")
+
+    if len(company_info) == 1:
+        company_name = company_info[0]
+        msg = f"Link a new address to '{company_name}'?"
+        response = sg.popup_yes_no(msg)
+        if response == "Yes":
+            address01 = Address()
+            address01 = view_create_link_address(address01)
+            if address01 is not None:
+                company01 = Company()
+                with db_session() as db:
+                    company01 = company01.get_company_by_name(db, company_name)
+                    address01.company_IdFK = company01.company_Id
+                    address01.add_address(db, address01)
+    else:
+        sg.popup("Choose different company")
+
+
+@utils.log_wrap
+def unlink_address(window):
+    logger.info(__name__ + ".unlink_address()")
+
+
+@utils.log_wrap
 def refresh_company_info(window):
     logger.info(__name__ + ".refresh_company_info()")
-    company = Company()
+    address01 = Address()
+    company01 = Company()
     with db_session() as db:
-        company_list = company.get_all_companies(db)
+        company_list = company01.get_all_companies(db)
         company_names = []
         for company in company_list:
             company_names.append(company.name)
         window['-LB_Company-'].update(sorted(company_names))
+
+        address_list = address01.get_address_list(db)
+        addresses = []
+        for loc in address_list:
+            address = f"{loc.street} {loc.city}, {loc.state} {loc.zip_code}"
+            addresses.append(address)
+        window['-LB_Address-'].update(sorted(addresses))
 
 
 @utils.log_wrap

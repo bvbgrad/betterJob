@@ -21,6 +21,8 @@ class Company(Base):
     def add_company(self, db, company):
         result = db.query(Company).filter_by(name=company.name).count()
         if result > 0:
+            # A 'result > 0' ensures no duplicate company names
+            # TODO Make company name column a unique index and not null
             raise ValueError(
                 f"Company name <{company.name}> already in the database")
         else:
@@ -34,8 +36,7 @@ class Company(Base):
         return number_companies
 
     def get_company_by_name(self, db, company_name):
-        company_list = db.query(Company).filter_by(name=company_name).all()
-        db.close()
+        company_list = db.query(Company).filter_by(name=company_name).first()
         return company_list
 
     def get_all_companies(self, db):
