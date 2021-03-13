@@ -36,8 +36,8 @@ class Company(Base):
         return number_companies
 
     def get_company_by_name(self, db, company_name):
-        company_list = db.query(Company).filter_by(name=company_name).first()
-        return company_list
+        company = db.query(Company).filter_by(name=company_name).first()
+        return company
 
     def get_all_companies(self, db):
         company_list = db.query(Company).all()
@@ -68,6 +68,9 @@ class Address(Base):
     def get_address_list(self, db):
         address_list = db.query(Address).all()
         return address_list
+
+    def get_address_by_company(self, db, company_id):
+        return db.query(Address).filter_by(company_IdFK=company_id).all()
 
     def delete_address(self, db, address):
         db.delete(address)

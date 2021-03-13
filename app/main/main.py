@@ -55,7 +55,7 @@ def menu():
         [sg.Button('Add New Company')],
         [sg.Button('Edit Company')],
         [sg.Listbox(
-            values=['No linked company address'], enable_events=True,
+            values=['No company address'], enable_events=True,
             key='-LB_Address-', size=(30, 2))],
         [sg.Button('Link a new Address to a Company')],
         [sg.Button('Unlink selected Address')]
@@ -84,27 +84,25 @@ def menu():
         if event == sg.WIN_CLOSED or event == 'Exit' or event is None:
             break       # exit event clicked
         elif first_loop:
-            refresh_company_info(window)
+            refresh_company_info(window, values['-LB_Company-'])
             first_loop = False
         elif event == '-LB_Company-':
-            company_name = values['-LB_Company-'][0]
-            msg = f"Display job postings for '{company_name}'"
-            sg.popup(msg)
+            work_company_details(window, values['-LB_Company-'])
         elif event == 'Display Company list':
-            refresh_company_info(window)
+            refresh_company_info(window, values['-LB_Company-'])
         elif event == 'Add New Company':
             add_new_company()
-            refresh_company_info(window)
+            refresh_company_info(window, values['-LB_Company-'])
         elif event == 'Edit Company':
             edit_company(values['-LB_Company-'])
-            refresh_company_info(window)
+            refresh_company_info(window, values['-LB_Company-'])
         elif event == 'List companies':
             get_company_list()
         elif event == 'Delete Company':
             delete_company()
         elif event == 'Link a new Address to a Company':
             link_address_to_company(values['-LB_Company-'])
-            refresh_company_info(window)
+            refresh_company_info(window, values['-LB_Company-'])
         elif event == 'Get addresses':
             get_address_list()
         elif event == 'Unlink selected Address':
@@ -141,7 +139,30 @@ def delete_address():
 
 
 @utils.log_wrap
-def add_new_company():
+def work_company_details(window, company_name):
+    logger.info(__name__ + ".work_company_details()")
+
+    if len(company_name) != 1:
+        sg.popup("Please select a company")
+    else:
+        company01 = get_selected_company(company_name)
+        msg = f"Display job postings for '{company01}'"
+        sg.popup(msg)
+        refresh_address_info(window, company01)
+
+
+def get_selected_company(company_info):
+    logger.info(__name__ + ".get_selected_company()")
+
+    company01 = Company()
+    company_name = company_info[0]
+    with db_session() as db:
+        company01 = company01.get_company_by_name(db, company_name)
+    return company01
+
+
+@utils.log_wrap
+def add_new_company(company_info):
     logger.info(__name__ + ".new_company()")
     text = sg.popup_get_text('Enter company name', 'Company name')
     if text is not None:
@@ -166,7 +187,7 @@ def edit_company(company_info):
         company_name = company_info[0]
         new_company_name = view_edit_company(company_name)
         # a blank return value means no no name change
-        if len(new_company_name) > 0:
+        if new_company_name is not None and len(new_company_name) > 0:
             # company instance required to access Company methods
             company01 = Company()
             with db_session() as db:
@@ -253,9 +274,8 @@ def unlink_address(window):
 
 
 @utils.log_wrap
-def refresh_company_info(window):
+def refresh_company_info(window, company_name):
     logger.info(__name__ + ".refresh_company_info()")
-    address01 = Address()
     company01 = Company()
     with db_session() as db:
         company_list = company01.get_all_companies(db)
@@ -264,12 +284,28 @@ def refresh_company_info(window):
             company_names.append(company.name)
         window['-LB_Company-'].update(sorted(company_names))
 
-        address_list = address01.get_address_list(db)
-        addresses = []
-        for loc in address_list:
-            address = f"{loc.street} {loc.city}, {loc.state} {loc.zip_code}"
-            addresses.append(address)
-        window['-LB_Address-'].update(sorted(addresses))
+
+@utils.log_wrap
+def refresh_address_info(window, company):
+    logger.info(__name__ + ".refresh_address_info()")
+
+    address01 = Address()
+    if company is None:
+        sg.popup("Please select a company")
+    else:
+        with db_session() as db:
+            address_list = \
+                address01.get_address_by_company(db, company.company_Id)
+            addresses = []
+            for loc in address_list:
+                address = \
+                    f"{loc.street}, {loc.city}, {loc.state} {loc.zip_code}"
+                addresses.append(address)
+
+        if len(addresses) > 0:
+            window['-LB_Address-'].update(sorted(addresses))
+        else:
+            window['-LB_Address-'].update(['No company address'])
 
 
 @utils.log_wrap

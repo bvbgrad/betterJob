@@ -26,8 +26,15 @@ Base = declarative_base()
 
 @contextmanager
 def db_session():
-    """Provide a transactional scope around a series of operations."""
-    session = Session_db()
+    """
+    Provide a transactional scope around a series of operations.
+
+    Set 'expire_on_commit=False' in order to mitigate lazy loading error
+    Instance <object instance> is not bound to a Session;
+      attribute refresh operation cannot proceed
+      (Background on this error at: http://sqlalche.me/e/13/bhk3)
+    """
+    session = Session_db(expire_on_commit=False)
     try:
         yield session
         session.commit()
