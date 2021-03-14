@@ -16,6 +16,8 @@ version = __version__ = '0.1'
 logger_name = os.getenv("LOGGER_NAME")
 logger = logging.getLogger(logger_name)
 
+NO_COMPANY_ADDRESS = 'No company address'
+
 
 @utils.log_wrap
 def menu():
@@ -38,7 +40,7 @@ def menu():
                     'Address CRUD',
                     ['Link Address',
                         'Get addresses',
-                        'Unlink Address'],
+                        'Delete Address'],
                 ]],
             ['Daily Tasks',
                 ['Identify Job resources',
@@ -55,10 +57,10 @@ def menu():
         [sg.Button('Add New Company')],
         [sg.Button('Edit Company')],
         [sg.Listbox(
-            values=['No company address'], enable_events=True,
+            values=[NO_COMPANY_ADDRESS], enable_events=True,
             key='-LB_Address-', size=(30, 2))],
         [sg.Button('Link a new Address to a Company')],
-        [sg.Button('Unlink selected Address')]
+        [sg.Button('Delete selected Address')]
         ]
 
     col1_layout = [[sg.Frame('Company Information', layout=company_layout)]]
@@ -105,8 +107,10 @@ def menu():
             refresh_company_info(window, values['-LB_Company-'])
         elif event == 'Get addresses':
             get_address_list()
-        elif event == 'Unlink selected Address':
-            unlink_address(window)
+        elif event == 'Delete selected Address':
+            delete_address(window, values['-LB_Address-'])
+            company01 = get_selected_company(values['-LB_Company-'])
+            refresh_address_info(window, company01)
     window.close()
 
 
@@ -134,10 +138,6 @@ def get_address_list():
         print(f"\t{address_list}")
 
 
-def delete_address():
-    logger.info(__name__ + ".delete_address()")
-
-
 @utils.log_wrap
 def work_company_details(window, company_name):
     logger.info(__name__ + ".work_company_details()")
@@ -154,6 +154,11 @@ def work_company_details(window, company_name):
 def get_selected_company(company_info):
     logger.info(__name__ + ".get_selected_company()")
 
+    # can't get a company instance without a company name
+    if len(company_info) == 0:
+        return
+
+    # just need an empty company instance for the query
     company01 = Company()
     company_name = company_info[0]
     with db_session() as db:
@@ -265,12 +270,39 @@ def link_address_to_company(company_info):
                     address01.company_IdFK = company01.company_Id
                     address01.add_address(db, address01)
     else:
-        sg.popup("Choose different company")
+        sg.popup("Choose a company")
 
 
 @utils.log_wrap
-def unlink_address(window):
-    logger.info(__name__ + ".unlink_address()")
+def delete_address(window, address):
+    logger.info(__name__ + f".delete_address({address})")
+
+    if len(address) != 1:
+        sg.popup("Please select a single address to delete")
+        return
+
+    # address[0] is the candidate address to delete
+    # unless it is the default value that indicates there are no addresses
+    if address[0] == NO_COMPANY_ADDRESS:
+        sg.popup("There is no address to delete")
+        return
+
+    # we have a single address to delete
+    # create a skeleton address and scan the address list to find its equal
+    ap = address[0].split('*')
+    address01 = Address(ap[0], ap[1], ap[2], ap[3])
+    with db_session() as db:
+        addresses = address01.get_address_list(db)
+        for address in addresses:
+            address_found = False
+            if address01 == address:
+                address_found = True
+                break
+        if address_found:
+            address.delete_self(db)
+            logger.info(f"Deleted: {address}")
+        else:
+            logger.info(f"Not found: {address}")
 
 
 @utils.log_wrap
@@ -299,13 +331,13 @@ def refresh_address_info(window, company):
             addresses = []
             for loc in address_list:
                 address = \
-                    f"{loc.street}, {loc.city}, {loc.state} {loc.zip_code}"
+                    f"{loc.street}*{loc.city}*{loc.state}*{loc.zip_code}"
                 addresses.append(address)
 
         if len(addresses) > 0:
             window['-LB_Address-'].update(sorted(addresses))
         else:
-            window['-LB_Address-'].update(['No company address'])
+            window['-LB_Address-'].update([NO_COMPANY_ADDRESS])
 
 
 @utils.log_wrap

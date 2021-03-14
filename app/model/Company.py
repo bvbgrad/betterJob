@@ -53,10 +53,24 @@ class Address(Base):
     zip_code = Column(String(5))
     company_IdFK = Column(Integer, ForeignKey('company.company_Id'))
 
+    def __init__(self, street=None, city=None, state=None, zip_code=None):
+        self.street = street
+        self.city = city
+        self.state = state
+        self.zip_code = zip_code
+
     def __repr__(self):
         return f"Address(Id={self.address_Id!r}, street={self.street!r}, " +\
             f"city={self.city!r}, state={self.state!r}, " +\
             f"zip code={self.zip_code!r})"
+
+    def __eq__(self, other):
+        if (isinstance(other, Address)):
+            return self.street == other.street and \
+                self.city == other.city and \
+                self.state == other.state and \
+                self.zip_code == other.zip_code
+        return False
 
     def add_address(self, db, address):
         db.add(address)
@@ -74,3 +88,6 @@ class Address(Base):
 
     def delete_address(self, db, address):
         db.delete(address)
+
+    def delete_self(self, db):
+        db.delete(self)
