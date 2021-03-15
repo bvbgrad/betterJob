@@ -7,6 +7,7 @@ import PySimpleGUI as sg
 
 from app.model import db_session
 from app.model.Company import Address, Company
+from app.model.Job_Action import Job
 
 from app.main.views import view_create_link_address, view_edit_company
 
@@ -41,6 +42,9 @@ def menu():
                     ['Link Address',
                         'Get addresses',
                         'Delete Address'],
+                    'Job CRUD',
+                    ['Add New Job',
+                        'List jobs'],
                 ]],
             ['Daily Tasks',
                 ['Identify Job resources',
@@ -111,6 +115,8 @@ def menu():
             delete_address(window, values['-LB_Address-'])
             company01 = get_selected_company(values['-LB_Company-'])
             refresh_address_info(window, company01)
+        elif event == 'Add New Job':
+            add_job()
     window.close()
 
 
@@ -338,6 +344,21 @@ def refresh_address_info(window, company):
             window['-LB_Address-'].update(sorted(addresses))
         else:
             window['-LB_Address-'].update([NO_COMPANY_ADDRESS])
+
+
+@utils.log_wrap
+def add_job():
+    logger.info(__name__ + ".add_job()")
+    job01 = Job('test parameters', salary_min=110000, priority=5)
+    with db_session() as db:
+        job01.add_job(db, job01)
+
+    with db_session() as db:
+        print(f"There are {job01.get_job_count(db)} jobs")
+        for i, job in enumerate(job01.get_all_jobs(db), 1):
+            print(f"{i:2} --- {job}")
+
+    print(f"new job just added: {job01}")
 
 
 @utils.log_wrap
