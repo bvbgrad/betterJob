@@ -34,15 +34,16 @@ def menu():
                 ['Open', 'Save', 'Properties', 'Exit']],
             ['Features',
                 [
-                    'Company CRUD',
+                    'Company',
                     ['Add New Company',
+                        'Edit Company',
                         'List companies',
                         'Delete Company'],
-                    'Address CRUD',
+                    'Address',
                     ['Link Address',
                         'Get addresses',
                         'Delete Address'],
-                    'Job CRUD',
+                    'Job',
                     ['Add New Job',
                         'List jobs'],
                 ]],
@@ -67,9 +68,13 @@ def menu():
         [sg.Button('Delete selected Address')]
         ]
 
-    col1_layout = [[sg.Frame('Company Information', layout=company_layout)]]
+    col1_layout = [[sg.Frame('Companies', layout=company_layout)]]
 
-    layout = [
+    job_action_tab_layout = [[sg.Text('This is inside the job action tab')]]
+
+    networking_tab_layout = [[sg.Text('This is inside the networking tab')]]
+
+    company_tab_layout = [
                 [sg.Menu(menu_def, )],
                 [sg.Column(col1_layout)],
                 [sg.Text(
@@ -78,9 +83,16 @@ def menu():
                  ]
             ]
 
+    layout = [[sg.TabGroup([[
+        sg.Tab('Networking', networking_tab_layout),
+        sg.Tab('Company', company_tab_layout),
+        sg.Tab('Job Actions', job_action_tab_layout)
+        ]])
+    ]]
+
     window = sg.Window(
         '"Find a Better Job" Job Resource Manager',
-        layout, default_element_size=(40, 1), grab_anywhere=False)
+        layout, default_element_size=(40, 1), resizable=True)
 
     # --- Menu Loop --- #
     first_loop = True
@@ -173,7 +185,7 @@ def get_selected_company(company_info):
 
 
 @utils.log_wrap
-def add_new_company(company_info):
+def add_new_company():
     logger.info(__name__ + ".new_company()")
     text = sg.popup_get_text('Enter company name', 'Company name')
     if text is not None:
