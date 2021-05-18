@@ -32,7 +32,7 @@ def menu():
     menu_def = [
             ['File',
                 ['Open', 'Save', 'Properties', 'Exit']],
-            ['Features',
+            ['Edit',
                 [
                     'Company',
                     ['Add New Company',
@@ -59,35 +59,36 @@ def menu():
         [sg.Listbox(
             values=['Click here to display company info'], enable_events=True,
             key='-LB_Company-', size=(30, 10))],
-        [sg.Button('Add New Company')],
-        [sg.Button('Edit Company')],
         [sg.Listbox(
             values=[NO_COMPANY_ADDRESS], enable_events=True,
-            key='-LB_Address-', size=(30, 2))],
-        [sg.Button('Link a new Address to a Company')],
-        [sg.Button('Delete selected Address')]
+            key='-LB_Address-', size=(30, 2))]
         ]
 
-    col1_layout = [[sg.Frame('Companies', layout=company_layout)]]
+    companies_col1_layout = [[sg.Frame('Companies', layout=company_layout)]]
+    companies_col2_layout = [[sg.Text('Company Jobs')]]
+
+    company_tab_layout = [
+                [sg.Column(companies_col1_layout),
+                    sg.Column(companies_col2_layout)],
+                [sg.Text(
+                    f"Options: {args}", relief=sg.RELIEF_SUNKEN,
+                    size=(55, 1), pad=(0, 3), key='-status-')]
+            ]
 
     job_action_tab_layout = [[sg.Text('This is inside the job action tab')]]
 
     networking_tab_layout = [[sg.Text('This is inside the networking tab')]]
 
-    company_tab_layout = [
-                [sg.Menu(menu_def, )],
-                [sg.Column(col1_layout)],
-                [sg.Text(
-                    f"Options: {args}", relief=sg.RELIEF_SUNKEN,
-                    size=(55, 1), pad=(0, 3), key='-status-')
-                 ]
-            ]
+    metrics_tab_layout = [[sg.Text('This is inside the metrics tab')]]
 
-    layout = [[sg.TabGroup([[
-        sg.Tab('Networking', networking_tab_layout),
-        sg.Tab('Company', company_tab_layout),
-        sg.Tab('Job Actions', job_action_tab_layout)
-        ]])
+    layout = [[
+        [sg.Menu(menu_def, )],
+        sg.TabGroup([[
+            sg.Tab('Networking', networking_tab_layout),
+            sg.Tab('Companies', company_tab_layout),
+            sg.Tab('Job Actions', job_action_tab_layout),
+            sg.Tab('Metrics', metrics_tab_layout)
+            ]])
     ]]
 
     window = sg.Window(
@@ -118,12 +119,12 @@ def menu():
             get_company_list()
         elif event == 'Delete Company':
             delete_company()
-        elif event == 'Link a new Address to a Company':
+        elif event == 'Link Address':
             link_address_to_company(values['-LB_Company-'])
             refresh_company_info(window, values['-LB_Company-'])
         elif event == 'Get addresses':
             get_address_list()
-        elif event == 'Delete selected Address':
+        elif event == 'Delete Address':
             delete_address(window, values['-LB_Address-'])
             company01 = get_selected_company(values['-LB_Company-'])
             refresh_address_info(window, company01)
