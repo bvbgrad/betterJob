@@ -1,3 +1,4 @@
+from PySimpleGUI.PySimpleGUI import popup_scrolled
 import app.utils6L.utils6L as utils
 
 import argparse
@@ -29,38 +30,44 @@ def menu():
 
     # ------ GUI Defintion ------ #
 
+    company_submenu = [
+        'Add new company',
+        'Delete company',
+        'Edit company',
+        'List companies']
+    address_submenu = [
+        'Add address',
+        'Delete address',
+        'Edit address',
+        'Link address',
+        'List addresses']
+    job_submenu = [
+        'Add New Job',
+        'List jobs']
+
     menu_def = [
-            ['File',
-                ['Open', 'Save', 'Properties', 'Exit']],
-            ['Edit',
-                [
-                    'Company',
-                    ['Add New Company',
-                        'Edit Company',
-                        'List companies',
-                        'Delete Company'],
-                    'Address',
-                    ['Link Address',
-                        'Get addresses',
-                        'Delete Address'],
-                    'Job',
-                    ['Add New Job',
-                        'List jobs'],
-                ]],
-            ['Daily Tasks',
-                ['Identify Job resources',
-                    'Track events',
-                    'Log face-to-face']],
-            ['Help',
-                ['Instructions', 'About...']],
-            ]
+        ['File',
+            ['Open', 'Save', 'Properties', 'Exit']],
+        ['Edit',
+            ['Company', company_submenu,
+                'Address', address_submenu,
+                'Job', job_submenu]],
+        ['Daily Tasks',
+            ['Identify Job resources',
+                'Track events',
+                'Log face-to-face']],
+        ['Help',
+            ['Instructions', 'About...']],
+    ]
 
     company_layout = [
         [sg.Listbox(
             values=['Click here to display company info'], enable_events=True,
+            right_click_menu=['', company_submenu],
             key='-LB_Company-', size=(30, 10))],
         [sg.Listbox(
             values=[NO_COMPANY_ADDRESS], enable_events=True,
+            right_click_menu=['', address_submenu],
             key='-LB_Address-', size=(30, 2))]
         ]
 
@@ -109,22 +116,22 @@ def menu():
             work_company_details(window, values['-LB_Company-'])
         elif event == 'Display Company list':
             refresh_company_info(window, values['-LB_Company-'])
-        elif event == 'Add New Company':
+        elif event == 'Add new company':
             add_new_company()
             refresh_company_info(window, values['-LB_Company-'])
-        elif event == 'Edit Company':
+        elif event == 'Edit company':
             edit_company(values['-LB_Company-'])
             refresh_company_info(window, values['-LB_Company-'])
         elif event == 'List companies':
             get_company_list()
-        elif event == 'Delete Company':
+        elif event == 'Delete company':
             delete_company()
-        elif event == 'Link Address':
+        elif event == 'Link address':
             link_address_to_company(values['-LB_Company-'])
             refresh_company_info(window, values['-LB_Company-'])
-        elif event == 'Get addresses':
+        elif event == 'List addresses':
             get_address_list()
-        elif event == 'Delete Address':
+        elif event == 'Delete address':
             delete_address(window, values['-LB_Address-'])
             company01 = get_selected_company(values['-LB_Company-'])
             refresh_address_info(window, company01)
@@ -150,11 +157,16 @@ def get_address_list():
     logger.info(__name__ + ".get_address_list()")
     address = Address()
     with db_session() as db:
+        address_string = ""
         address_list = address.get_address_list(db)
-        address_count = address.get_address_count(db)
-        print(f"Found {address_count} addresses in the database")
-        print(f"The address list has {len(address_list)} addresses")
-        print(f"\t{address_list}")
+        number_addresses = len(address_list)
+        for address in address_list:
+            address_string += f"\t{address}\n"
+        popup_scrolled(
+            f"There are {number_addresses} addresses:",
+            f"{address_string}",
+            title="Addresses in the database",
+            size=(100, number_addresses))
 
 
 @utils.log_wrap
