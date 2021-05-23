@@ -13,9 +13,9 @@ from datetime import date
 class Job(Base):
     __tablename__ = 'job'
     job_Id = Column(Integer, primary_key=True)
-    # bvb TODO add status = Column (String(10))  # active, fav1-5, inactive
     job_name = Column(String(50))
     job_nbr = Column(String(30))
+    # bvb TODO change priority to status  # active, fav1-5, inactive
     priority = Column(String(10))
     job_type = Column(String(10))
     job_post_date = Column(Date())

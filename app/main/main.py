@@ -1,17 +1,17 @@
-from PySimpleGUI.PySimpleGUI import popup_scrolled
-import app.utils6L.utils6L as utils
-
 import argparse
 import logging
 import os
+
+import app.utils6L.utils6L as utils
 import PySimpleGUI as sg
 
+from app.main.views import (create_company_table, view_create_link_address,
+                            view_edit_company)
+from app.main.job_ctlr import add_job, get_job_data
 from app.model import db_session
 from app.model.Company import Address, Company
 from app.model.Job_Action import Job
-
-from app.main.views import view_create_link_address, view_edit_company, \
-        create_company_table
+from PySimpleGUI.PySimpleGUI import popup_scrolled
 
 author = __author__ = 'Brent V. Bingham'
 version = __version__ = '0.1'
@@ -62,6 +62,15 @@ def menu():
             ['Instructions', 'About...']],
     ]
 
+    if args.index:
+        company_address_visible_column_map = None
+        job_action_visible_column_map = None
+    else:
+        company_address_visible_column_map = \
+            [False, True, False, True, True, True, True, True]
+        job_action_visible_column_map = \
+            [False, True, True, True, True, True, True, True, True, True]
+
     company0_layout = [
         [sg.Listbox(
             values=['Click here to display company info'], enable_events=True,
@@ -80,12 +89,6 @@ def menu():
                 [sg.Column(companies_col1_layout),
                     sg.Column(companies_col2_layout)]
             ]
-
-    if args.index:
-        company_address_visible_column_map = None
-    else:
-        company_address_visible_column_map = \
-            [False, True, False, True, True, True, True, True]
 
     company_address_header = \
         ['Id', 'Name', 'Id', 'Street', 'City', 'State', 'Zip', 'Jobs']
@@ -106,7 +109,30 @@ def menu():
             tooltip='This table shows company and address information')]
     ]
 
-    job_action_tab_layout = [[sg.Text('This is inside the job action tab')]]
+    job_table_header = \
+        ['Id  ', 'Name', 'Number', 'Status', 'Type',
+            'Posted', 'Expire', 'Min $', 'Max $', 'Company']
+
+    job_data = get_job_data()
+    if len(job_data) == 0:
+        job_action_tab_layout = \
+            [[sg.Text('Please use Edit menu to add a job.')]]
+    else:
+        job_action_tab_layout = [
+            [sg.Text(f"There are {len(job_data)} jobs")],
+            [sg.Table(
+                values=job_data,
+                headings=job_table_header,
+                max_col_width=25,
+                auto_size_columns=True,
+                visible_column_map=job_action_visible_column_map,
+                display_row_numbers=False,
+                justification='left',
+                alternating_row_color='lightyellow',
+                key='-JOB_TABLE-', enable_events=True,
+                row_height=20,
+                tooltip='This table shows job information')]
+        ]
 
     networking_tab_layout = [[sg.Text('This is inside the networking tab')]]
 
@@ -399,21 +425,6 @@ def refresh_address_info(window, company):
             window['-LB_Address-'].update(sorted(addresses))
         else:
             window['-LB_Address-'].update([NO_COMPANY_ADDRESS])
-
-
-@utils.log_wrap
-def add_job():
-    logger.info(__name__ + ".add_job()")
-    job01 = Job('test parameters', salary_min=110000, priority=5)
-    with db_session() as db:
-        job01.add_job(db, job01)
-
-    with db_session() as db:
-        print(f"There are {job01.get_job_count(db)} jobs")
-        for i, job in enumerate(job01.get_all_jobs(db), 1):
-            print(f"{i:2} --- {job}")
-
-    print(f"new job just added: {job01}")
 
 
 @utils.log_wrap
