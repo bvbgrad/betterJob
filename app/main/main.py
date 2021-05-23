@@ -394,14 +394,26 @@ def add_job():
 def show_company_table():
     logger.info(__name__ + ".show_company_table()")
 
-    data = [['Name', 'Id']]
-    company01 = Company()
+    header = ['Id', 'Name', 'Id', 'Street', 'City', 'State', 'Zip', 'Jobs']
+    data = []
+    company = Company()
+    address = Address()
+    job = Job()
     with db_session() as db:
-        company_list = company01.get_all_companies(db)
+        company_list = company.get_all_companies(db)
         for company in company_list:
-            data.append([company.name, company.company_Id])
+            address_list = \
+                address.get_address_by_company(db, company.company_Id)
+            job_count = job.get_job_count_by_company(db, company.company_Id)
+            for adr in address_list:
+                data.append([
+                        company.company_Id, company.name,
+                        adr.address_Id, adr.street, adr.city,
+                        adr.state, adr.zip_code,
+                        job_count])
 
-    result = create_table(data)
+    # result = create_table(header, data, show_id=True)
+    result = create_table(header, data)
     if result is None:
         logger.info(__name__ + ".show_company_table() Error result")
     print(f'Show table result: {result}')

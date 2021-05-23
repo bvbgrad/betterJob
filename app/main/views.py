@@ -8,6 +8,7 @@ import os
 import PySimpleGUI as sg
 
 from app.model.Company import Address
+# from app.model.Job_Action import Job
 
 logger_name = os.getenv("LOGGER_NAME")
 logger = logging.getLogger(logger_name)
@@ -54,7 +55,7 @@ def view_create_link_address(address: Address) -> Address:
 
 
 @utils.log_wrap
-def create_table(data, table_title=''):
+def create_table(header, data, table_title='', show_id=False):
     logger.info(__name__ + ".create_table()")
 
     if len(data) == 0:
@@ -62,22 +63,31 @@ def create_table(data, table_title=''):
         return None
 
     results = []
-    headings = [str(data[0][x]) for x in range(len(data[0]))]
+    if show_id:
+        visible_column_map = None
+    else:
+        visible_column_map = \
+            [False, True, False, True, True, True, True, True]
 
-    layout = [[sg.Table(
-        values=data[1:][:], headings=headings,
-        max_col_width=25,
-        # background_color='light blue',
-        auto_size_columns=True,
-        display_row_numbers=False,
-        justification='left',
-        # num_rows=20,
-        alternating_row_color='lightyellow',
-        key='-TABLE-',
-        row_height=20,
-        tooltip='This is a table')],
-        [sg.Button('Select'), sg.Button('Exit')],
-        [sg.Text('Select= read which rows are selected')]]
+    layout = [
+        [
+            sg.CB('Address', enable_events=True, key='-ADDRESS-')
+        ],
+        [sg.Table(
+            values=data[0:][:], headings=header,
+            max_col_width=25,
+            # background_color='light blue',
+            auto_size_columns=True,
+            visible_column_map=visible_column_map,
+            display_row_numbers=False,
+            justification='left',
+            # num_rows=20,
+            alternating_row_color='lightyellow',
+            key='-TABLE-', enable_events=True,
+            row_height=20,
+            tooltip='This is a table')],
+        [sg.Button('Exit')]
+    ]
 
     window = sg.Window(table_title, layout)
     while True:
@@ -85,9 +95,13 @@ def create_table(data, table_title=''):
         print(event, values)
         if event == 'Exit' or event == sg.WIN_CLOSED:
             break
-        if event == 'Select':
-            for row in values['-TABLE-']:
-                results.append(data[row + 1])
+        elif event == '-TABLE-':
+            if len(values['-TABLE-']) > 1:
+                for row in values['-TABLE-']:
+                    results.append(data[row])
+            else:
+                print(f"Action: {data[values['-TABLE-'][0]]}")
+                results = data[values['-TABLE-'][0]]
         elif event == 'Update':
             window['-TABLE-'].update(values=data)
 

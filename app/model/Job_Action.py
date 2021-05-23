@@ -24,7 +24,7 @@ class Job(Base):
     company_IdFK = Column(Integer, ForeignKey('company.company_Id'))
 
     def __init__(
-        self, job_name, job_nbr=None, priority=3, job_type=None,
+        self, job_name=None, job_nbr=None, priority=3, job_type=None,
             job_post_date=None, job_expire_date=None,
             salary_min=0, salary_max=None, company_IdFK=0):
 
@@ -58,6 +58,12 @@ class Job(Base):
     def get_job_count(self, db):
         number_jobs = db.query(Job).count()
         return number_jobs
+
+    def get_job_count_by_company(self, db, company_id):
+        return db.query(Job).filter_by(company_IdFK=company_id).count()
+
+    def get_job_by_company(self, db, company_id):
+        return db.query(Job).filter_by(company_IdFK=company_id).all()
 
     def get_all_jobs(self, db):
         job_list = db.query(Job).all()
