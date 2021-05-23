@@ -11,7 +11,7 @@ from app.model.Company import Address, Company
 from app.model.Job_Action import Job
 
 from app.main.views import view_create_link_address, view_edit_company, \
-        create_table
+        create_company_table
 
 author = __author__ = 'Brent V. Bingham'
 version = __version__ = '0.1'
@@ -62,7 +62,7 @@ def menu():
             ['Instructions', 'About...']],
     ]
 
-    company_layout = [
+    company0_layout = [
         [sg.Listbox(
             values=['Click here to display company info'], enable_events=True,
             right_click_menu=['', company_submenu],
@@ -73,16 +73,38 @@ def menu():
             key='-LB_Address-', size=(30, 2))]
         ]
 
-    companies_col1_layout = [[sg.Frame('Companies', layout=company_layout)]]
+    companies_col1_layout = [[sg.Frame('Companies', layout=company0_layout)]]
     companies_col2_layout = [[sg.Text('Company Jobs')]]
 
-    company_tab_layout = [
+    company0_tab_layout = [
                 [sg.Column(companies_col1_layout),
-                    sg.Column(companies_col2_layout)],
-                [sg.Text(
-                    f"Options: {args}", relief=sg.RELIEF_SUNKEN,
-                    size=(55, 1), pad=(0, 3), key='-status-')]
+                    sg.Column(companies_col2_layout)]
             ]
+
+    if args.index:
+        company_address_visible_column_map = None
+    else:
+        company_address_visible_column_map = \
+            [False, True, False, True, True, True, True, True]
+
+    company_address_header = \
+        ['Id', 'Name', 'Id', 'Street', 'City', 'State', 'Zip', 'Jobs']
+
+    company1_tab_layout = [
+        [sg.CB('Address', default=True, enable_events=True, key='-ADDRESS-')],
+        [sg.Table(
+            values=get_company_address_table_data(),
+            headings=company_address_header,
+            max_col_width=25,
+            auto_size_columns=True,
+            visible_column_map=company_address_visible_column_map,
+            display_row_numbers=False,
+            justification='left',
+            alternating_row_color='lightyellow',
+            key='-TABLE-', enable_events=True,
+            row_height=20,
+            tooltip='This table shows company and address information')]
+    ]
 
     job_action_tab_layout = [[sg.Text('This is inside the job action tab')]]
 
@@ -92,9 +114,13 @@ def menu():
 
     layout = [[
         [sg.Menu(menu_def, )],
+        [sg.Text(
+            f"Options: {args}", relief=sg.RELIEF_SUNKEN,
+            size=(55, 1), pad=(0, 3), key='-status0-')],
         sg.TabGroup([[
             sg.Tab('Networking', networking_tab_layout),
-            sg.Tab('Companies', company_tab_layout),
+            sg.Tab('Companies (List Box)', company0_tab_layout),
+            sg.Tab('Companies (Table)', company1_tab_layout),
             sg.Tab('Job Actions', job_action_tab_layout),
             sg.Tab('Metrics', metrics_tab_layout)
             ]])
@@ -110,7 +136,7 @@ def menu():
         event, values = window.read()
         logger.info(f"Menu event='{event}'")
         if event == sg.WIN_CLOSED or event == 'Exit' or event is None:
-            break       # exit event clicked
+            break
         elif first_loop:
             refresh_company_info(window, values['-LB_Company-'])
             first_loop = False
@@ -395,6 +421,19 @@ def show_company_table():
     logger.info(__name__ + ".show_company_table()")
 
     header = ['Id', 'Name', 'Id', 'Street', 'City', 'State', 'Zip', 'Jobs']
+
+    data = get_company_address_table_data()
+    # result = create_table(header, data, show_id=True)
+    result = create_company_table(header, data)
+    if result is None:
+        logger.info(__name__ + ".show_company_table() Error result")
+    print(f'Show table result: {result}')
+
+
+@utils.log_wrap
+def get_company_address_table_data():
+    logger.info(__name__ + ".show_company_table()")
+
     data = []
     company = Company()
     address = Address()
@@ -411,12 +450,7 @@ def show_company_table():
                         adr.address_Id, adr.street, adr.city,
                         adr.state, adr.zip_code,
                         job_count])
-
-    # result = create_table(header, data, show_id=True)
-    result = create_table(header, data)
-    if result is None:
-        logger.info(__name__ + ".show_company_table() Error result")
-    print(f'Show table result: {result}')
+    return data
 
 
 @utils.log_wrap
@@ -424,6 +458,9 @@ def getargs():
     logger.info(__name__ + ".getargs()")
     parser = argparse.ArgumentParser(
         description="Track and log job search activities")
+    parser.add_argument(
+        '-i', '--index', default=False, action="store_true",
+        help='Display object indexes in tables')
     parser.add_argument(
         '-v', '--verbose', default=False, action="store_true",
         help='Provide detailed information')

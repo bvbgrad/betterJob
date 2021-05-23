@@ -55,7 +55,7 @@ def view_create_link_address(address: Address) -> Address:
 
 
 @utils.log_wrap
-def create_table(header, data, table_title='', show_id=False):
+def create_company_table(header, data, table_title='', show_id=False):
     logger.info(__name__ + ".create_table()")
 
     if len(data) == 0:
@@ -85,7 +85,7 @@ def create_table(header, data, table_title='', show_id=False):
             alternating_row_color='lightyellow',
             key='-TABLE-', enable_events=True,
             row_height=20,
-            tooltip='This is a table')],
+            tooltip='This table shows company and address information')],
         [sg.Button('Exit')]
     ]
 
@@ -102,8 +102,8 @@ def create_table(header, data, table_title='', show_id=False):
             else:
                 print(f"Action: {data[values['-TABLE-'][0]]}")
                 results = data[values['-TABLE-'][0]]
-        elif event == 'Update':
-            window['-TABLE-'].update(values=data)
+        # elif event == 'Update':
+        #     window['-TABLE-'].update(values=data)
 
     window.close()
     return(results)

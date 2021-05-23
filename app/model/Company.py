@@ -12,6 +12,7 @@ from app.model import Base
 class Company(Base):
     __tablename__ = 'company'
     company_Id = Column(Integer, primary_key=True)
+    # bvb TODO add status = Column (String(10))  # active, fav1-5, inactive
     name = Column(String(30))
     address = relationship("Address")
 
@@ -22,7 +23,7 @@ class Company(Base):
         result = db.query(Company).filter_by(name=company.name).count()
         if result > 0:
             # A 'result > 0' ensures no duplicate company names
-            # TODO Make company name column a unique index and not null
+            # bvb TODO Make company name column a unique index and not null
             raise ValueError(
                 f"Company name <{company.name}> already in the database")
         else:
