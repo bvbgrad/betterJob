@@ -51,3 +51,45 @@ def view_create_link_address(address: Address) -> Address:
     address.zip_code = values['-ZIP_CODE-']
 
     return address
+
+
+@utils.log_wrap
+def create_table(data, table_title=''):
+    logger.info(__name__ + ".create_table()")
+
+    if len(data) == 0:
+        logger.warn(__name__ + ".create_table() No data provided for table")
+        return None
+
+    results = []
+    headings = [str(data[0][x]) for x in range(len(data[0]))]
+
+    layout = [[sg.Table(
+        values=data[1:][:], headings=headings,
+        max_col_width=25,
+        # background_color='light blue',
+        auto_size_columns=True,
+        display_row_numbers=False,
+        justification='left',
+        # num_rows=20,
+        alternating_row_color='lightyellow',
+        key='-TABLE-',
+        row_height=20,
+        tooltip='This is a table')],
+        [sg.Button('Select'), sg.Button('Exit')],
+        [sg.Text('Select= read which rows are selected')]]
+
+    window = sg.Window(table_title, layout)
+    while True:
+        event, values = window.read()
+        print(event, values)
+        if event == 'Exit' or event == sg.WIN_CLOSED:
+            break
+        if event == 'Select':
+            for row in values['-TABLE-']:
+                results.append(data[row + 1])
+        elif event == 'Update':
+            window['-TABLE-'].update(values=data)
+
+    window.close()
+    return(results)

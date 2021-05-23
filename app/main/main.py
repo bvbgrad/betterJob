@@ -10,7 +10,8 @@ from app.model import db_session
 from app.model.Company import Address, Company
 from app.model.Job_Action import Job
 
-from app.main.views import view_create_link_address, view_edit_company
+from app.main.views import view_create_link_address, view_edit_company, \
+        create_table
 
 author = __author__ = 'Brent V. Bingham'
 version = __version__ = '0.1'
@@ -34,7 +35,8 @@ def menu():
         'Add new company',
         'Delete company',
         'Edit company',
-        'List companies']
+        'List companies',
+        'Show companies']
     address_submenu = [
         'Add address',
         'Delete address',
@@ -124,6 +126,8 @@ def menu():
             refresh_company_info(window, values['-LB_Company-'])
         elif event == 'List companies':
             get_company_list()
+        elif event == 'Show companies':
+            show_company_table()
         elif event == 'Delete company':
             delete_company()
         elif event == 'Link address':
@@ -384,6 +388,23 @@ def add_job():
             print(f"{i:2} --- {job}")
 
     print(f"new job just added: {job01}")
+
+
+@utils.log_wrap
+def show_company_table():
+    logger.info(__name__ + ".show_company_table()")
+
+    data = [['Name', 'Id']]
+    company01 = Company()
+    with db_session() as db:
+        company_list = company01.get_all_companies(db)
+        for company in company_list:
+            data.append([company.name, company.company_Id])
+
+    result = create_table(data)
+    if result is None:
+        logger.info(__name__ + ".show_company_table() Error result")
+    print(f'Show table result: {result}')
 
 
 @utils.log_wrap
