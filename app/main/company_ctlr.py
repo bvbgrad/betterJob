@@ -148,7 +148,7 @@ def show_company_table():
 
 @utils.log_wrap
 def get_company_address_table_data():
-    logger.info(__name__ + ".show_company_table()")
+    logger.info(__name__ + ".get_company_address_table_data()")
 
     data = []
     company = Company()
@@ -160,10 +160,16 @@ def get_company_address_table_data():
             address_list = \
                 address.get_address_by_company(db, company.company_Id)
             job_count = job.get_job_count_by_company(db, company.company_Id)
-            for adr in address_list:
+            if len(address_list) == 0:
                 data.append([
                         company.company_Id, company.name,
-                        adr.address_Id, adr.street, adr.city,
-                        adr.state, adr.zip_code,
-                        job_count])
+                        '', '', '', '', '', job_count])
+            else:
+                for adr in address_list:
+                    data.append([
+                            company.company_Id, company.name,
+                            adr.address_Id, adr.street, adr.city,
+                            adr.state, adr.zip_code,
+                            job_count])
+# bvb TODO sort the data list by company.name
     return data

@@ -95,10 +95,19 @@ def menu():
     company_address_header = \
         ['Id', 'Name', 'Id', 'Street', 'City', 'State', 'Zip', 'Jobs']
 
+    company_address_data = get_company_address_table_data()
+    company_address_rows = len(company_address_data)
+    company_locations_text = \
+        f"There are {company_address_rows} company locations."
     company1_tab_layout = [
-        [sg.CB('Address', default=True, enable_events=True, key='-ADDRESS-')],
+        [sg.CB(
+            'Address', default=True,
+            enable_events=True, key='-CB_ADDRESS-')],
+        [sg.Text(
+            company_locations_text,
+            key='-NBR_COMPANIES-')],
         [sg.Table(
-            values=get_company_address_table_data(),
+            values=company_address_data,
             headings=company_address_header,
             right_click_menu=['', company_submenu],
             max_col_width=25,
@@ -107,7 +116,7 @@ def menu():
             display_row_numbers=False,
             justification='left',
             alternating_row_color='lightyellow',
-            key='-TABLE-', enable_events=True,
+            key='-COMPANY_TABLE-', enable_events=True,
             row_height=20,
             tooltip='This table shows company and address information')]
     ]
@@ -122,7 +131,7 @@ def menu():
             [[sg.Text('Please use Edit menu to add a job.')]]
     else:
         job_action_tab_layout = [
-            [sg.Text(f"There are {len(job_data)} jobs")],
+            [sg.Text(f"There are {len(job_data)} jobs", key='-NBR_JOBS')],
             [sg.Table(
                 values=job_data,
                 headings=job_table_header,
@@ -157,29 +166,27 @@ def menu():
     ]]
 
     window = sg.Window(
-        '"Find a Better Job" Job Resource Manager',
-        layout, default_element_size=(40, 1), resizable=True)
+        '"Find a Better Job" Job Resource Manager (JRM)',
+        layout, default_element_size=(40, 1),
+        resizable=True, finalize=True)
 
     # --- Menu Loop --- #
-    first_loop = True
     while True:
+        refresh_all_table_info(window)
         event, values = window.read()
         logger.info(f"Menu event='{event}'")
         if event == sg.WIN_CLOSED or event == 'Exit' or event is None:
             break
-        elif first_loop:
-            refresh_company_info(window, values['-LB_Company-'])
-            first_loop = False
         elif event == '-LB_Company-':
             work_company_details(window, values['-LB_Company-'])
         elif event == 'Display Company list':
-            refresh_company_info(window, values['-LB_Company-'])
+            refresh_company_info(window)
         elif event == 'Add new company':
             add_new_company()
-            refresh_company_info(window, values['-LB_Company-'])
+            refresh_company_info(window)
         elif event == 'Edit company':
             edit_company(values['-LB_Company-'])
-            refresh_company_info(window, values['-LB_Company-'])
+            refresh_company_info(window)
         elif event == 'List companies':
             get_company_list()
         elif event == 'Show companies':
@@ -188,7 +195,7 @@ def menu():
             delete_company()
         elif event == 'Link address':
             link_address_to_company(values['-LB_Company-'])
-            refresh_company_info(window, values['-LB_Company-'])
+            refresh_company_info(window)
         elif event == 'List addresses':
             get_address_list()
         elif event == 'Delete address':
@@ -198,6 +205,20 @@ def menu():
         elif event == 'Add New Job':
             add_job()
     window.close()
+
+
+@utils.log_wrap
+def refresh_all_table_info(window):
+    logger.info(__name__ + ".refresh_all_table_info()")
+
+    refresh_company_info(window)
+
+    company_address_data = get_company_address_table_data()
+    company_address_rows = len(company_address_data)
+    company_locations_text = \
+        f"There are {company_address_rows} company locations."
+    window['-NBR_COMPANIES-'].update(company_locations_text)
+    window['-COMPANY_TABLE-'].update(company_address_data)
 
 
 @utils.log_wrap
@@ -224,7 +245,7 @@ def refresh_address_info(window, company):
 
 
 @utils.log_wrap
-def refresh_company_info(window, company_name):
+def refresh_company_info(window):
     logger.info(__name__ + ".refresh_company_info()")
     company01 = Company()
     with db_session() as db:
