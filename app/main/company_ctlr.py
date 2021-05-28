@@ -114,6 +114,7 @@ def delete_company():
                 sg.popup_no_titlebar(f"Deleted {number_to_delete} companies")
 
 
+# bvb TODO check references, may not need this module
 @utils.log_wrap
 def get_company_list():
     logger.info(__name__ + ".get_company_list()")
@@ -171,5 +172,6 @@ def get_company_address_table_data():
                             adr.address_Id, adr.street, adr.city,
                             adr.state, adr.zip_code,
                             job_count])
-# bvb TODO sort the data list by company.name
+# sort the data list by company.name and state
+    data.sort(key=lambda x: (x[1], ('' if x[4] is None else x[4])))
     return data

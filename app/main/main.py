@@ -8,12 +8,11 @@ import PySimpleGUI as sg
 from app.main.address_ctlr import link_address_to_company, get_address_list
 from app.main.address_ctlr import delete_address
 from app.main.company_ctlr import get_company_address_table_data
-from app.main.company_ctlr import get_company_list, create_company_table
 from app.main.company_ctlr import work_company_details, get_selected_company
 from app.main.company_ctlr import add_new_company, edit_company, delete_company
 from app.main.job_ctlr import add_job, get_job_data
 from app.model import db_session
-from app.model.Company import Address, Company
+from app.model.Company import Address
 
 author = __author__ = 'Brent V. Bingham'
 version = __version__ = '0.1'
@@ -36,9 +35,7 @@ def menu():
     company_submenu = [
         'Add new company',
         'Delete company',
-        'Edit company',
-        'List companies',
-        'Show companies']
+        'Edit company']
     address_submenu = [
         'Add address',
         'Delete address',
@@ -72,25 +69,6 @@ def menu():
             [False, True, False, True, True, True, True, True]
         job_action_visible_column_map = \
             [False, True, True, True, True, True, True, True, True, True]
-
-    company0_layout = [
-        [sg.Listbox(
-            values=['Click here to display company info'], enable_events=True,
-            right_click_menu=['', company_submenu],
-            key='-LB_Company-', size=(30, 10))],
-        [sg.Listbox(
-            values=[NO_COMPANY_ADDRESS], enable_events=True,
-            right_click_menu=['', address_submenu],
-            key='-LB_Address-', size=(30, 2))]
-        ]
-
-    companies_col1_layout = [[sg.Frame('Companies', layout=company0_layout)]]
-    companies_col2_layout = [[sg.Text('Company Jobs')]]
-
-    company0_tab_layout = [
-                [sg.Column(companies_col1_layout),
-                    sg.Column(companies_col2_layout)]
-            ]
 
     company_address_header = \
         ['Id', 'Name', 'Id', 'Street', 'City', 'State', 'Zip', 'Jobs']
@@ -158,8 +136,7 @@ def menu():
             size=(55, 1), pad=(0, 3), key='-status0-')],
         sg.TabGroup([[
             sg.Tab('Networking', networking_tab_layout),
-            sg.Tab('Companies (List Box)', company0_tab_layout),
-            sg.Tab('Companies (Table)', company1_tab_layout),
+            sg.Tab('Companies', company1_tab_layout),
             sg.Tab('Job Actions', job_action_tab_layout),
             sg.Tab('Metrics', metrics_tab_layout)
             ]])
@@ -179,23 +156,14 @@ def menu():
             break
         elif event == '-LB_Company-':
             work_company_details(window, values['-LB_Company-'])
-        elif event == 'Display Company list':
-            refresh_company_info(window)
         elif event == 'Add new company':
             add_new_company()
-            refresh_company_info(window)
         elif event == 'Edit company':
             edit_company(values['-LB_Company-'])
-            refresh_company_info(window)
-        elif event == 'List companies':
-            get_company_list()
-        elif event == 'Show companies':
-            show_company_table()
         elif event == 'Delete company':
             delete_company()
         elif event == 'Link address':
             link_address_to_company(values['-LB_Company-'])
-            refresh_company_info(window)
         elif event == 'List addresses':
             get_address_list()
         elif event == 'Delete address':
@@ -210,8 +178,6 @@ def menu():
 @utils.log_wrap
 def refresh_all_table_info(window):
     logger.info(__name__ + ".refresh_all_table_info()")
-
-    refresh_company_info(window)
 
     company_address_data = get_company_address_table_data()
     company_address_rows = len(company_address_data)
@@ -242,33 +208,6 @@ def refresh_address_info(window, company):
             window['-LB_Address-'].update(sorted(addresses))
         else:
             window['-LB_Address-'].update([NO_COMPANY_ADDRESS])
-
-
-@utils.log_wrap
-def refresh_company_info(window):
-    logger.info(__name__ + ".refresh_company_info()")
-    company01 = Company()
-    with db_session() as db:
-        company_list = company01.get_all_companies(db)
-        company_names = []
-        for company in company_list:
-            company_names.append(company.name)
-        window['-LB_Company-'].update(sorted(company_names))
-        refresh_address_info(window, company01)
-
-
-@utils.log_wrap
-def show_company_table():
-    logger.info(__name__ + ".show_company_table()")
-
-    header = ['Id', 'Name', 'Id', 'Street', 'City', 'State', 'Zip', 'Jobs']
-
-    data = get_company_address_table_data()
-    # result = create_table(header, data, show_id=True)
-    result = create_company_table(header, data)
-    if result is None:
-        logger.info(__name__ + ".show_company_table() Error result")
-    print(f'Show table result: {result}')
 
 
 @utils.log_wrap
