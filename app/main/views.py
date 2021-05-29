@@ -54,6 +54,7 @@ def view_create_link_address(address: Address) -> Address:
     return address
 
 
+# bvb TODO check references, may not need this function
 @utils.log_wrap
 def create_company_table(header, data, table_title='', show_id=False):
     logger.info(__name__ + ".create_table()")

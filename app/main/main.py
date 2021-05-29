@@ -1,21 +1,16 @@
-import argparse
 import logging
 import os
 
 import app.utils6L.utils6L as utils
+from app.main.config import getargs, get_config, save_config, get_version
 import PySimpleGUI as sg
 
 from app.main.address_ctlr import link_address_to_company, get_address_list
 from app.main.address_ctlr import delete_address
 from app.main.company_ctlr import get_company_address_table_data
-from app.main.company_ctlr import work_company_details, get_selected_company
+from app.main.company_ctlr import work_company_details
 from app.main.company_ctlr import add_new_company, edit_company, delete_company
 from app.main.job_ctlr import add_job, get_job_data
-from app.model import db_session
-from app.model.Company import Address
-
-author = __author__ = 'Brent V. Bingham'
-version = __version__ = '0.1'
 
 logger_name = os.getenv("LOGGER_NAME")
 logger = logging.getLogger(logger_name)
@@ -26,9 +21,13 @@ NO_COMPANY_ADDRESS = 'No company address'
 @utils.log_wrap
 def menu():
     logger.info(__name__ + ".menu()")
+    logger.info(f"{get_version()}\nUsing {sg}\nVersion{sg.version}")
     args = getargs()
-    sg.ChangeLookAndFeel('LightGreen')
-    sg.SetOptions(element_padding=(0, 0))
+    config = get_config()
+
+    sg.ChangeLookAndFeel(config["theme"]["lookandfeel"])
+    # sg.SetOptions(element_padding=(0, 0), font=config["theme"]["font"], auto_size_text=True)
+    sg.SetOptions(element_padding=(0, 0), font=12, auto_size_text=True)
 
     # ------ GUI Defintion ------ #
 
@@ -168,10 +167,14 @@ def menu():
             get_address_list()
         elif event == 'Delete address':
             delete_address(window, values['-LB_Address-'])
-            company01 = get_selected_company(values['-LB_Company-'])
-            refresh_address_info(window, company01)
         elif event == 'Add New Job':
             add_job()
+        elif event == 'About...':
+            about_text = f"{get_version()}\n\nUsing {sg}\nVersion{sg.version}"
+            sg.popup(about_text, title="About JRM")
+
+    # All done - exiting
+    save_config(config)
     window.close()
 
 
@@ -185,43 +188,3 @@ def refresh_all_table_info(window):
         f"There are {company_address_rows} company locations."
     window['-NBR_COMPANIES-'].update(company_locations_text)
     window['-COMPANY_TABLE-'].update(company_address_data)
-
-
-@utils.log_wrap
-def refresh_address_info(window, company):
-    logger.info(__name__ + ".refresh_address_info()")
-
-    address01 = Address()
-    if company is None:
-        sg.popup("Please select a company")
-    else:
-        with db_session() as db:
-            address_list = \
-                address01.get_address_by_company(db, company.company_Id)
-            addresses = []
-            for loc in address_list:
-                address = \
-                    f"{loc.street}*{loc.city}*{loc.state}*{loc.zip_code}"
-                addresses.append(address)
-
-        if len(addresses) > 0:
-            window['-LB_Address-'].update(sorted(addresses))
-        else:
-            window['-LB_Address-'].update([NO_COMPANY_ADDRESS])
-
-
-@utils.log_wrap
-def getargs():
-    logger.info(__name__ + ".getargs()")
-    parser = argparse.ArgumentParser(
-        description="Track and log job search activities")
-    parser.add_argument(
-        '-i', '--index', default=False, action="store_true",
-        help='Display object indexes in tables')
-    parser.add_argument(
-        '-v', '--verbose', default=False, action="store_true",
-        help='Provide detailed information')
-    parser.add_argument(
-        '--version', action='version', version='%(prog)s {version}')
-    args = parser.parse_args()
-    return args
