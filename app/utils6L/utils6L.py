@@ -41,9 +41,9 @@ logger = logging.getLogger(logger_name)
 
 def log_wrap(func):
     def wrapped(*args, **kwargs):
-        logger.info(f"enter {func.__name__}()")
+        logger.debug(f"enter {func.__name__}()")
         result = func(*args, **kwargs)
-        logger.info(f"exit {func.__name__}()")
+        logger.debug(f"exit {func.__name__}()")
         return result
     return wrapped
 

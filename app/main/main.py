@@ -8,7 +8,7 @@ import PySimpleGUI as sg
 from app.main.address_ctlr import link_address_to_company, get_address_list
 from app.main.address_ctlr import delete_address
 from app.main.company_ctlr import get_company_address_table_data
-from app.main.company_ctlr import work_company_details
+from app.main.company_ctlr import company_details
 from app.main.company_ctlr import add_new_company, edit_company, delete_company
 from app.main.job_ctlr import add_job, get_job_data
 
@@ -76,7 +76,7 @@ def menu():
     company_address_rows = len(company_address_data)
     company_locations_text = \
         f"There are {company_address_rows} company locations."
-    company1_tab_layout = [
+    company_tab_layout = [
         [sg.CB(
             'Address', default=True,
             enable_events=True, key='-CB_ADDRESS-')],
@@ -93,8 +93,8 @@ def menu():
             display_row_numbers=False,
             justification='left',
             alternating_row_color='lightyellow',
-            key='-COMPANY_TABLE-', enable_events=True,
             row_height=20,
+            key='-COMPANY_TABLE-', enable_events=True,
             tooltip='This table shows company and address information')]
     ]
 
@@ -129,16 +129,16 @@ def menu():
     metrics_tab_layout = [[sg.Text('This is inside the metrics tab')]]
 
     layout = [[
-        [sg.Menu(menu_def, )],
+        [sg.Menu(menu_def, key='-MENU-')],
         [sg.Text(
             f"Options: {args}", relief=sg.RELIEF_SUNKEN,
-            size=(55, 1), pad=(0, 3), key='-status0-')],
+            size=(55, 1), pad=(0, 3), key='-STATUS-')],
         sg.TabGroup([[
             sg.Tab('Networking', networking_tab_layout),
-            sg.Tab('Companies', company1_tab_layout),
+            sg.Tab('Companies', company_tab_layout),
             sg.Tab('Job Actions', job_action_tab_layout),
             sg.Tab('Metrics', metrics_tab_layout)
-            ]])
+            ]], key='-TAB-')
     ]]
 
     window = sg.Window(
@@ -150,19 +150,19 @@ def menu():
     while True:
         refresh_all_table_info(window)
         event, values = window.read()
-        logger.info(f"Menu event='{event}'")
+        logger.info(f"Menu event, values = '{event}', {values}")
         if event == sg.WIN_CLOSED or event == 'Exit' or event is None:
             break
-        elif event == '-LB_Company-':
-            work_company_details(window, values['-LB_Company-'])
+        elif event == '-COMPANY_TABLE-':
+            company_details(window, values['-COMPANY_TABLE-'], company_address_data)
         elif event == 'Add new company':
             add_new_company()
         elif event == 'Edit company':
-            edit_company(values['-LB_Company-'])
+            edit_company(values['-COMPANY_TABLE-'])
         elif event == 'Delete company':
             delete_company()
         elif event == 'Link address':
-            link_address_to_company(values['-LB_Company-'])
+            link_address_to_company(values['-COMPANY_TABLE-'])
         elif event == 'List addresses':
             get_address_list()
         elif event == 'Delete address':

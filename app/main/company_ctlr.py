@@ -20,15 +20,23 @@ logger = logging.getLogger(logger_name)
 
 
 @utils.log_wrap
-def work_company_details(window, company_name):
-    logger.info(__name__ + ".work_company_details()")
+def company_details(window, company_rows, company_address_data):
+    logger.info(__name__ + ".company_details()")
 
-    if len(company_name) != 1:
-        sg.popup("Please select a company")
+    if len(company_rows) == 0:
+        sg.popup("Please select a company", no_titlebar=True)
     else:
-        company01 = get_selected_company(company_name)
-        msg = f"Display job postings for '{company01}'"
-        sg.popup(msg)
+        company_data = company_address_data[company_rows[0]]
+        msg = ''
+        if company_data[7] > 0:
+            job = Job()
+            with db_session() as db:
+                job_list = job.get_job_by_company(db, company_data[0])
+                msg = f"{company_data[1]} has {company_data[7]} job postings"
+                msg += f"{job_list}"
+        else:
+            msg = f"No job postings identified yet for '{company_data[1]}'"
+        sg.popup(msg, no_titlebar=True)
 
 
 def get_selected_company(company_info):
@@ -154,13 +162,13 @@ def get_company_address_table_data():
     data = []
     company = Company()
     address = Address()
-    job = Job()
+    job01 = Job()
     with db_session() as db:
         company_list = company.get_all_companies(db)
         for company in company_list:
             address_list = \
                 address.get_address_by_company(db, company.company_Id)
-            job_count = job.get_job_count_by_company(db, company.company_Id)
+            job_count = job01.get_job_count_by_company(db, company.company_Id)
             if len(address_list) == 0:
                 data.append([
                         company.company_Id, company.name,

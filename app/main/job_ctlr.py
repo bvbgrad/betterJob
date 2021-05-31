@@ -1,10 +1,12 @@
 """
 """
 
+from app.model.Company import Company
 import app.utils6L.utils6L as utils
 
 import logging
 import os
+import random
 # import PySimpleGUI as sg
 
 from app.model import db_session
@@ -36,12 +38,19 @@ def get_job_data():
 def add_job():
     logger.info(__name__ + ".add_job()")
     job01 = Job('test parameters', salary_min=110000, priority=5)
+    company01 = Company()
     with db_session() as db:
         job01.add_job(db, job01)
-
-    with db_session() as db:
-        print(f"There are {job01.get_job_count(db)} jobs")
+    # bvb TODO temporary random assignment of a job to an existing company
+        company_list = company01.get_all_companies(db)
+        company_ids = []
+        # create a set of existing company_Id's
+        for company in company_list:
+            company_ids.append(company.company_Id)
         for i, job in enumerate(job01.get_all_jobs(db), 1):
-            print(f"{i:2} --- {job}")
+            random_company_Id = random.choice(company_ids)
+            print(f"{i:2} --- company {random_company_Id} randomly assigned to job_Id = {job.job_Id}")
+            job.company_IdFK = random_company_Id
+            job.add_job(db, job)
 
     print(f"new job just added: {job01}")
